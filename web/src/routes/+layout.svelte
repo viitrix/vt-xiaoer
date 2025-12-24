@@ -14,8 +14,7 @@
 	import { onNavigate } from '$app/navigation';
 	import CollapsibleSidebar from '$lib/components/CollapsibleSidebar.svelte';
 	import SidebarToggle from '$lib/components/SidebarToggle.svelte';
-	import { ConnectionType, getDefaultServer } from '$lib/connections';
-	import { serversStore, settingsStore, StorageKey } from '$lib/localStorage';
+	import { settingsStore } from '$lib/localStorage';
 	import { checkForUpdates } from '$lib/updates';
 
 	let { children }: { children: Snippet } = $props();
@@ -56,52 +55,7 @@
 		setLocale($settingsStore.userLanguage);
 
 		// Migrate old server settings to new format
-		const settingsLocalStorage = localStorage.getItem(StorageKey.HollamaPreferences);
-		if (settingsLocalStorage) {
-			const settings = JSON.parse(settingsLocalStorage);
-
-			if (settings.ollamaServer || settings.openaiServer) {
-				// Migrate Ollama server settings
-				if (settings.ollamaServer) {
-					console.warn('Migrating Ollama server settings');
-					serversStore.update((servers) => [
-						...servers,
-						{
-							...getDefaultServer(ConnectionType.Ollama),
-							baseUrl: settings.ollamaServer
-						}
-					]);
-
-					delete settings.ollamaServer;
-					delete settings.ollamaModel;
-					delete settings.ollamaServerStatus;
-					delete settings.ollamaModels;
-				}
-
-				// Migrate OpenAI server settings
-				if (settings.openaiServer) {
-					console.warn('Migrating OpenAI server settings');
-					serversStore.update((servers) => [
-						...servers,
-						{
-							...getDefaultServer(ConnectionType.OpenAI),
-							baseUrl: settings.openaiServer,
-							apiKey: settings.openaiApiKey
-						}
-					]);
-
-					delete settings.openaiServer;
-					delete settings.openaiApiKey;
-				}
-
-				// Reset the settings store with the removed keys
-				localStorage.removeItem(StorageKey.HollamaPreferences);
-				settingsStore.set(settings);
-
-				// Ask the user to re-verify the server connections
-				toast.warning($LL.serverSettingsUpdated());
-			}
-		}
+		// TODO 当网页更新的时候，合并之前的设置
 
 		// Color theme
 		if (browser && !$settingsStore.userTheme) {

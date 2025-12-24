@@ -20,7 +20,7 @@
 		shouldConfirmDeletion = false;
 
 		switch (sitemap) {
-			case Sitemap.KNOWLEDGE:
+			case Sitemap.AGENTS:
 				if ($knowledgeStore) $knowledgeStore = deleteStoreItem($knowledgeStore, id);
 				return goto('/knowledge');
 
@@ -62,7 +62,7 @@
 			variant="icon"
 			class="delete__trash"
 			on:click={() => updateConfirmDeletion(true)}
-			title={sitemap === Sitemap.KNOWLEDGE ? $LL.deleteKnowledge() : $LL.deleteSession()}
+			title={sitemap === Sitemap.AGENTS ? $LL.deleteKnowledge() : $LL.deleteSession()}
 		>
 			<Trash2 class="base-icon" />
 		</Button>

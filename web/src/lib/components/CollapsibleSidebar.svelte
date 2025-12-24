@@ -68,7 +68,7 @@
 			<div class="flex items-center justify-between border-b py-4">
 				<a href="/" class="mx-auto flex items-center gap-2 pr-4">
 					<img class="h-8 w-8" src="/favicon.png" alt="Hollama logo" />
-					<span class="text-lg font-semibold tracking-tight">Hollama</span>
+					<span class="text-lg font-semibold tracking-tight">云锦微 AI 小二</span>
 				</a>
 			</div>
 
@@ -103,7 +103,7 @@
 				</button>
 			</div>
 			<div class="border-b bg-shade-2 px-3 pb-3 pt-0">
-				<ButtonNew sitemap={activeSection === 'sessions' ? Sitemap.SESSIONS : Sitemap.KNOWLEDGE} />
+				<ButtonNew sitemap={activeSection === 'sessions' ? Sitemap.SESSIONS : Sitemap.AGENTS} />
 			</div>
 
 			<div class="flex flex-1 flex-col overflow-hidden">
@@ -142,7 +142,7 @@
 								{#if $knowledgeStore && $knowledgeStore.length > 0}
 									{#each $knowledgeStore as knowledge (knowledge.id)}
 										<SectionListItem
-											sitemap={Sitemap.KNOWLEDGE}
+											sitemap={Sitemap.AGENTS}
 											id={knowledge.id}
 											title={knowledge.name}
 											subtitle={formatTimestampToNow(knowledge.updatedAt)}
