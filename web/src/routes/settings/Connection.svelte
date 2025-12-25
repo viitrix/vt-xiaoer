@@ -11,18 +11,20 @@
 	import FieldInput from '$lib/components/FieldInput.svelte';
 	import Fieldset from '$lib/components/Fieldset.svelte';
 	import P from '$lib/components/P.svelte';
-	import { serversStore } from '$lib/localStorage';
+	import { devicesStore } from '$lib/localStorage';
+    import type { Device } from '$lib/devices'
 
 	interface Props {
 		index: number;
 	}
 
 	let { index }: Props = $props();
-	let server: Server = $state($serversStore[index]);
+	let server: Device = $state($devicesStore[index]);
 	let isLoading = $state(false);
 
 	$effect(() => {
-		serversStore.update((servers) => {
+        console.log(">>>>>>>>>>>>>>>>>");
+        devicesStore.update((servers) => {
 			servers.splice(index, 1, server);
 			return servers;
 		});
@@ -32,31 +34,21 @@
 		isLoading = true;
 		const toastId = toast.loading($LL.connecting());
 
-		strategy = isOpenAiFamily ? new OpenAIStrategy(server) : new OllamaStrategy(server);
-		server.isVerified = (await strategy.verifyServer()) ? new Date() : null;
-
-		if (server.isVerified) {
-			server.isEnabled = true;
-			toast.success($LL.connectionIsVerified(), { id: toastId });
-		} else {
-			toast.error($LL.connectionFailedToVerify(), { id: toastId });
-		}
+		toast.success($LL.connectionIsVerified(), { id: toastId });
 		isLoading = false;
 	}
 
 	function deleteServer() {
-		serversStore.update((servers) => servers.filter((s) => s.id !== server.id));
+		devicesStore.update((servers) => servers.filter((s) => s.id !== server.id));
 	}
 </script>
 
 <div data-testid="server">
 	<Fieldset>
-        <Badge>{server.label ? server.label : server.connectionType?.toUpperCase()}</Badge>
+        <Badge>{server.label ? server.label : server.deviceType?.toUpperCase()}</Badge>
 
 		<Fieldset>
 			<nav class="flex items-stretch gap-x-2">
-				<FieldCheckbox label={$LL.useModelsFromThisServer()} bind:checked={server.isEnabled} />
-
 				<Button
 					class="max-h-full"
 					variant="outline"
@@ -67,7 +59,7 @@
 				</Button>
 
 				<Button
-					disabled={isLoading || !server.baseUrl}
+					disabled={isLoading}
 					variant={!server.isVerified ? 'default' : 'outline'}
 					on:click={verifyServer}
 				>
@@ -80,60 +72,6 @@
 			</nav>
 
 			<div class="flex flex-col gap-2 sm:grid sm:grid-cols-2">
-				<div class="col-span-2 grid gap-2 {isOpenAiFamily ? 'sm:grid sm:grid-cols-2' : ''}">
-					<FieldInput
-						name={`server-${server.id}`}
-						label={$LL.baseUrl()}
-						placeholder={server.baseUrl}
-						bind:value={server.baseUrl}
-					>
-						<svelte:fragment slot="help">
-							{#if isOllamaFamily}
-								<OllamaBaseURLHelp {server} />
-							{/if}
-						</svelte:fragment>
-					</FieldInput>
-
-					{#if isOpenAiFamily}
-						<FieldInput
-							type="password"
-							name={`apiKey-${server.id}`}
-							label={$LL.apiKey()}
-							bind:value={server.apiKey}
-						>
-							<svelte:fragment slot="help">
-								{#if server.connectionType === 'openai'}
-									<FieldHelp>
-										<P>
-											<Button
-												variant="link"
-												href="https://help.openai.com/en/articles/4936850-where-do-i-find-my-openai-api-key"
-												target="_blank"
-											>
-												{$LL.howToObtainOpenAIKey()}
-											</Button>
-										</P>
-									</FieldHelp>
-								{/if}
-							</svelte:fragment>
-						</FieldInput>
-					{/if}
-				</div>
-				<FieldInput
-					name={`modelsFilter-${server.id}`}
-					label={$LL.modelsFilter()}
-					placeholder="gpt"
-					bind:value={server.modelFilter}
-				>
-					<svelte:fragment slot="help">
-						<FieldHelp>
-							<P>
-								{$LL.modelsFilterHelp()}
-							</P>
-						</FieldHelp>
-					</svelte:fragment>
-				</FieldInput>
-
 				<FieldInput
 					name={`label-${server.id}`}
 					label={$LL.label()}
@@ -147,10 +85,6 @@
 					</svelte:fragment>
 				</FieldInput>
 			</div>
-
-			{#if isOllamaFamily}
-				<PullModel {server} />
-			{/if}
 		</Fieldset>
 	</Fieldset>
 </div>

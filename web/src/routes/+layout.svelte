@@ -15,14 +15,10 @@
 	import CollapsibleSidebar from '$lib/components/CollapsibleSidebar.svelte';
 	import SidebarToggle from '$lib/components/SidebarToggle.svelte';
 	import { settingsStore } from '$lib/localStorage';
-	import { checkForUpdates } from '$lib/updates';
 
 	let { children }: { children: Snippet } = $props();
 
 	onNavigate(async (navigation) => {
-		// Check for updates whenever the user follows a link (if auto-check is enabled)
-		if (!($settingsStore.autoCheckForUpdates === false)) await checkForUpdates();
-
 		// Auto-collapse sidebar on mobile when navigating (except for exact /sessions and /knowledge)
 		if (browser && window.innerWidth < 1024) {
 			const pathname = navigation.to?.url.pathname;

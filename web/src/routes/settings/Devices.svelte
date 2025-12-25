@@ -7,16 +7,16 @@
 	import P from '$lib/components/P.svelte';
 	import { DeviceType, getDefaultDevice } from '$lib/devices';
 	import { devicesStore } from '$lib/localStorage';
-    //import Connection from './Connection.svelte';
+    import Connection from './Connection.svelte';
     
     let newDeviceType: DeviceType | undefined = $state();
 
 	function addDevice() {
 		if (!newDeviceType) return;
-		const server = getDefaultDevice(newDeviceType);
-		devicesStore.update((servers) => [...servers, server]);
+		const device = getDefaultDevice(newDeviceType);
+		devicesStore.update((devices) => [...devices, device]);
 		newDeviceType = undefined;
-	}
+    }
 </script>
 
 <Fieldset>
@@ -45,8 +45,7 @@
 		</div>
 	</div>
     
-    <!--
-	<div class="servers">
+	<div class="devices">
 		{#if !$devicesStore.length}
 			<div
 				class="col-span-full -mt-3 flex text-balance rounded-md border border-shade-3 text-center"
@@ -55,11 +54,10 @@
 			</div>
 		{/if}
 
-		{#each $devicesStore as server, index (server.id)}
+		{#each $devicesStore as device, index (device.id)}
 			<Connection {index} />
 		{/each}
 	</div>
-    -->
 </Fieldset>
 
 <style lang="postcss">
@@ -71,7 +69,7 @@
 		@apply grid grid-cols-[auto_max-content] gap-2;
 	}
 
-	.servers {
+	.devices {
 		@apply flex flex-col gap-y-4;
 	}
 </style>

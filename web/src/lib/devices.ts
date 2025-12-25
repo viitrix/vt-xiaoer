@@ -1,7 +1,6 @@
-import type { Locales } from '$i18n/i18n-types';
+import { generateRandomId } from './utils';
 
 export interface Role {
-    deviceId: string;
     apiKey: string;
     name: string;
 }
@@ -13,12 +12,18 @@ export enum DeviceType {
 
 export interface Device {
 	id: string;
+    deviceId: string; 
+    label: string;
+    isVerified: boolean;
     dType: DeviceType;
 }
 
 export function getDefaultDevice(deviceType: DeviceType): Device {
     return {
-        id : 'XXX_设备ID_XXX',
+        id: generateRandomId(),
+        deviceId : 'XXX_设备ID_XXX',
+        lable: '__标记__',
+        isVerified: false,
         dType: deviceType
     }
 }
