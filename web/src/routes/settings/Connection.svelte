@@ -23,7 +23,6 @@
 	let isLoading = $state(false);
 
 	$effect(() => {
-        console.log(">>>>>>>>>>>>>>>>>");
         devicesStore.update((servers) => {
 			servers.splice(index, 1, server);
 			return servers;
@@ -45,8 +44,9 @@
 
 <div data-testid="server">
 	<Fieldset>
-        <Badge>{server.label ? server.label : server.deviceType?.toUpperCase()}</Badge>
-
+		{#snippet legend()}
+        <Badge>{server.label ? server.label : server.dType?.toUpperCase()}</Badge>
+		{/snippet}
 		<Fieldset>
 			<nav class="flex items-stretch gap-x-2">
 				<Button
@@ -70,8 +70,30 @@
 					{/if}
 				</Button>
 			</nav>
-
+			
+				
 			<div class="flex flex-col gap-2 sm:grid sm:grid-cols-2">
+				<div class="col-span-2 grid gap-2">
+					<FieldInput
+						name={`server-${server.id}`}
+						label={$LL.baseUrl()}
+						placeholder={server.deviceId}
+						bind:value={server.deviceId}
+					>
+					</FieldInput>
+				</div>	
+				<FieldInput
+					name={`label-${server.id}`}
+					label={$LL.label()}
+					bind:value={server.label}
+					placeholder="my-llama-server"
+				>
+					<svelte:fragment slot="help">
+						<FieldHelp>
+							<P>{$LL.connectionLabelHelp()}</P>
+						</FieldHelp>
+					</svelte:fragment>
+				</FieldInput>
 				<FieldInput
 					name={`label-${server.id}`}
 					label={$LL.label()}
