@@ -192,6 +192,10 @@ type RootTranslation = {
 	 */
 	deleteSession: string
 	/**
+	 * V​i​i​t​r​i​x​ ​D​e​v​i​c​e​s
+	 */
+	devices: string
+	/**
 	 * D​i​s​c​o​n​n​e​c​t​e​d
 	 */
 	disconnected: string
@@ -870,6 +874,10 @@ The completion in progress will stop
 	 * Delete session
 	 */
 	deleteSession: () => LocalizedString
+	/**
+	 * Viitrix Devices
+	 */
+	devices: () => LocalizedString
 	/**
 	 * Disconnected
 	 */

@@ -2,20 +2,16 @@
 	import LL from '$i18n/i18n-svelte';
 	import Head from '$lib/components/Head.svelte';
 
-	import DataManagement from './DataManagement.svelte';
 	import Interface from './Interface.svelte';
 	import Servers from './Servers.svelte';
-	import Version from './Version.svelte';
 </script>
 
 <Head title={$LL.settings()} />
 
 <section class="settings">
 	<div class="settings-fieldsets">
-		<Version />
-		<Servers />
+        <Servers />
 		<Interface />
-		<DataManagement />
 	</div>
 </section>
 

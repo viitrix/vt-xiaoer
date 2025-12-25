@@ -5,48 +5,46 @@
 	import FieldSelect from '$lib/components/FieldSelect.svelte';
 	import Fieldset from '$lib/components/Fieldset.svelte';
 	import P from '$lib/components/P.svelte';
-	import { ConnectionType, getDefaultServer } from '$lib/connections';
+	import { DeviceType } from '$lib/settings';
 	import { serversStore } from '$lib/localStorage';
 
-	import Connection from './Connection.svelte';
+    let newDeviceType: DeviceType | undefined = $state();
 
-	let newConnectionType: ConnectionType | undefined = $state();
-
-	function addServer() {
-		if (!newConnectionType) return;
-		const server = getDefaultServer(newConnectionType);
+	function addDevice() {
+		if (!newDeviceType) return;
+		const server = getDefaultServer(newDeviceType);
 		serversStore.update((servers) => [...servers, server]);
-		newConnectionType = undefined;
+		newDeviceType = undefined;
 	}
 </script>
 
 <Fieldset>
 	<P>
-		<strong>{$LL.servers()}</strong>
+		<strong>{$LL.devices()}</strong>
 	</P>
 
-	<div class="connections">
-		<div class="connections__add">
-			{#key newConnectionType}
+	<div class="devices">
+		<div class="devices__add">
+			{#key newDeviceType}
 				<FieldSelect
-					name="connectionType"
+					name="deviceType"
 					isLabelVisible={false}
 					label={$LL.connectionType()}
 					placeholder={$LL.connectionType()}
 					options={[
-						{ value: ConnectionType.Ollama, label: $LL.ollama() },
-						{ value: ConnectionType.OpenAI, label: $LL.openAIOfficialAPI() },
-						{ value: ConnectionType.OpenAICompatible, label: $LL.openAICompatible() }
+						{ value: DeviceType.VTCamera, label: "ZN04摄像头"  },
+						{ value: DeviceType.VTSpeaker, label: "ESP32音箱" },
 					]}
-					bind:value={newConnectionType}
+					bind:value={newDeviceType}
 				/>
 			{/key}
-			<Button disabled={!newConnectionType} on:click={addServer}>
+			<Button disabled={!newDeviceType} on:click={addDevice}>
 				{$LL.addConnection()}
 			</Button>
 		</div>
 	</div>
-
+    
+    <!--
 	<div class="servers">
 		{#if !$serversStore.length}
 			<div
@@ -60,14 +58,15 @@
 			<Connection {index} />
 		{/each}
 	</div>
+    -->
 </Fieldset>
 
 <style lang="postcss">
-	.connections {
+	.devices {
 		@apply mb-4 flex flex-col gap-y-2;
 	}
 
-	.connections__add {
+	.devices__add {
 		@apply grid grid-cols-[auto_max-content] gap-2;
 	}
 
