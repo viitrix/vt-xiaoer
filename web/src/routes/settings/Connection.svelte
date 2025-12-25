@@ -4,8 +4,6 @@
 	import { toast } from 'svelte-sonner';
 
 	import LL from '$i18n/i18n-svelte';
-	import { OllamaStrategy } from '$lib/chat/ollama';
-	import { OpenAIStrategy } from '$lib/chat/openai';
 	import Badge from '$lib/components/Badge.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import FieldCheckbox from '$lib/components/FieldCheckbox.svelte';
@@ -13,11 +11,7 @@
 	import FieldInput from '$lib/components/FieldInput.svelte';
 	import Fieldset from '$lib/components/Fieldset.svelte';
 	import P from '$lib/components/P.svelte';
-	import { ConnectionType, type Server } from '$lib/connections';
 	import { serversStore } from '$lib/localStorage';
-
-	import OllamaBaseURLHelp from './ollama/BaseURLHelp.svelte';
-	import PullModel from './ollama/PullModel.svelte';
 
 	interface Props {
 		index: number;
@@ -25,13 +19,7 @@
 
 	let { index }: Props = $props();
 	let server: Server = $state($serversStore[index]);
-	let strategy: OllamaStrategy | OpenAIStrategy;
 	let isLoading = $state(false);
-
-	const isOpenAiFamily = $derived(
-		[ConnectionType.OpenAI, ConnectionType.OpenAICompatible].includes(server.connectionType)
-	);
-	const isOllamaFamily = $derived([ConnectionType.Ollama].includes(server.connectionType));
 
 	$effect(() => {
 		serversStore.update((servers) => {
@@ -63,16 +51,7 @@
 
 <div data-testid="server">
 	<Fieldset>
-		{#snippet legend()}
-			{#if [ConnectionType.OpenAI, ConnectionType.Ollama].includes(server.connectionType)}
-				<Badge
-					variant={server.connectionType === ConnectionType.OpenAI
-						? ConnectionType.OpenAI
-						: ConnectionType.Ollama}
-				/>
-			{/if}
-			<Badge>{server.label ? server.label : server.connectionType?.toUpperCase()}</Badge>
-		{/snippet}
+        <Badge>{server.label ? server.label : server.connectionType?.toUpperCase()}</Badge>
 
 		<Fieldset>
 			<nav class="flex items-stretch gap-x-2">

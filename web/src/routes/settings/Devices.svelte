@@ -5,15 +5,16 @@
 	import FieldSelect from '$lib/components/FieldSelect.svelte';
 	import Fieldset from '$lib/components/Fieldset.svelte';
 	import P from '$lib/components/P.svelte';
-	import { DeviceType } from '$lib/settings';
-	import { serversStore } from '$lib/localStorage';
-
+	import { DeviceType, getDefaultDevice } from '$lib/devices';
+	import { devicesStore } from '$lib/localStorage';
+    //import Connection from './Connection.svelte';
+    
     let newDeviceType: DeviceType | undefined = $state();
 
 	function addDevice() {
 		if (!newDeviceType) return;
-		const server = getDefaultServer(newDeviceType);
-		serversStore.update((servers) => [...servers, server]);
+		const server = getDefaultDevice(newDeviceType);
+		devicesStore.update((servers) => [...servers, server]);
 		newDeviceType = undefined;
 	}
 </script>
@@ -46,7 +47,7 @@
     
     <!--
 	<div class="servers">
-		{#if !$serversStore.length}
+		{#if !$devicesStore.length}
 			<div
 				class="col-span-full -mt-3 flex text-balance rounded-md border border-shade-3 text-center"
 			>
@@ -54,7 +55,7 @@
 			</div>
 		{/if}
 
-		{#each $serversStore as server, index (server.id)}
+		{#each $devicesStore as server, index (server.id)}
 			<Connection {index} />
 		{/each}
 	</div>

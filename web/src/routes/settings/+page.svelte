@@ -3,14 +3,14 @@
 	import Head from '$lib/components/Head.svelte';
 
 	import Interface from './Interface.svelte';
-	import Servers from './Servers.svelte';
+	import Devices from './Devices.svelte';
 </script>
 
 <Head title={$LL.settings()} />
 
 <section class="settings">
 	<div class="settings-fieldsets">
-        <Servers />
+        <Devices />
 		<Interface />
 	</div>
 </section>

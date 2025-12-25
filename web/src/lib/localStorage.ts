@@ -3,10 +3,10 @@ import { writable } from 'svelte/store';
 
 import { browser } from '$app/environment';
 import type { Session } from '$lib/sessions';
+import type { Knowledge } from '$lib/knowledge';
+import type { Device } from '$lib/devices';
 
-import type { Server } from './connections';
-import type { Knowledge } from './knowledge';
-import { DEFAULT_SETTINGS, type Settings } from './settings';
+import { DEFAULT_SETTINGS, type Settings} from './settings';
 
 function createLocalStorageStore<T>(key: string, defaultValue: T) {
 	const initialValue: T = browser
@@ -62,7 +62,7 @@ export function deleteStoreItem<T extends { id: string }>(store: T[], id: string
 export const LOCAL_STORAGE_PREFIX = 'hollama';
 export enum StorageKey {
 	HollamaPreferences = `${LOCAL_STORAGE_PREFIX}-settings`,
-	HollamaServers = `${LOCAL_STORAGE_PREFIX}-servers`,
+	HollamaDevices = `${LOCAL_STORAGE_PREFIX}-devices`,
 	HollamaSessions = `${LOCAL_STORAGE_PREFIX}-sessions`,
 	HollamaKnowledge = `${LOCAL_STORAGE_PREFIX}-knowledge`
 }
@@ -71,6 +71,6 @@ export const settingsStore = createLocalStorageStore<Settings>(
 	StorageKey.HollamaPreferences,
 	DEFAULT_SETTINGS
 );
-export const serversStore = createLocalStorageStore<Server[]>(StorageKey.HollamaServers, []);
+export const devicesStore = createLocalStorageStore<Device[]>(StorageKey.HollamaDevices, []);
 export const sessionsStore = createLocalStorageStore<Session[]>(StorageKey.HollamaSessions, []);
 export const knowledgeStore = createLocalStorageStore<Knowledge[]>(StorageKey.HollamaKnowledge, []);
