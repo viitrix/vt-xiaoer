@@ -131,7 +131,9 @@ const zh_cn = {
 	version: '版本',
 	writePromptToStart: '写一段提示词以开始新会话',
 	you: '你',
-	setupRole: '智能体'
+	setupRole: '配置角色',
+	agents: '智能体',
+	emptyAgnets: '没有智能体在运行',
 } satisfies BaseTranslation;
 
 export default zh_cn;

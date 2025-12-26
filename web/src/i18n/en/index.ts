@@ -185,7 +185,9 @@ const en = {
 	expandSidebar: 'Expand sidebar',
 	collapseSidebar: 'Collapse sidebar',
 
-	setupRole: 'AI Agent Management' 
+	setupRole: 'AI Agent Management',
+	agents: 'Agents',
+	emptyAgnets: 'No Agents',
 
 } satisfies BaseTranslation;
 

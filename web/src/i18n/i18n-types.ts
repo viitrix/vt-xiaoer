@@ -734,6 +734,14 @@ type RootTranslation = {
 	 * A​I​ ​A​g​e​n​t​ ​M​a​n​a​g​e​m​e​n​t
 	 */
 	setupRole: string
+	/**
+	 * A​g​e​n​t​s
+	 */
+	agents: string
+	/**
+	 * N​o​ ​A​g​e​n​t​s
+	 */
+	emptyAgnets: string
 }
 
 export type TranslationFunctions = {
@@ -1454,6 +1462,14 @@ The completion in progress will stop
 	 * AI Agent Management
 	 */
 	setupRole: () => LocalizedString
+	/**
+	 * Agents
+	 */
+	agents: () => LocalizedString
+	/**
+	 * No Agents
+	 */
+	emptyAgnets: () => LocalizedString
 }
 
 export type Formatters = {}

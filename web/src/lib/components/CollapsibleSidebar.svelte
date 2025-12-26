@@ -12,7 +12,7 @@
 	import LL from '$i18n/i18n-svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { knowledgeStore, sessionsStore, settingsStore } from '$lib/localStorage';
+	import { sessionsStore, settingsStore } from '$lib/localStorage';
 	import { formatSessionMetadata, getSessionTitle } from '$lib/sessions';
 	import { Sitemap } from '$lib/sitemap';
 	import { updateStatusStore } from '$lib/updates';
@@ -23,7 +23,7 @@
 	import SectionList from './SectionList.svelte';
 	import SectionListItem from './SectionListItem.svelte';
 
-	type SidebarSection = 'sessions' | 'knowledge';
+	type SidebarSection = 'sessions' | 'agents';
 
 	let activeSection: SidebarSection = $state('sessions');
 
@@ -32,8 +32,8 @@
 	$effect(() => {
 		if (pathname.includes('/sessions')) {
 			activeSection = 'sessions';
-		} else if (pathname.includes('/knowledge')) {
-			activeSection = 'knowledge';
+		} else if (pathname.includes('/agents')) {
+			activeSection = 'agents';
 		}
 	});
 
@@ -45,8 +45,8 @@
 		activeSection = section;
 		if (section === 'sessions') {
 			goto('/sessions');
-		} else if (section === 'knowledge') {
-			goto('/knowledge');
+		} else if (section === 'agents') {
+			goto('/agents');
 		}
 	}
 </script>
@@ -88,21 +88,23 @@
 					{$LL.sessions()}
 				</button>
 				<button
-					onclick={() => setActiveSection('knowledge')}
+					onclick={() => setActiveSection('agents')}
 					class="duration-25 flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 font-medium transition-colors hover:text-active {activeSection ===
-					'knowledge'
+					'agents'
 						? 'bg-shade-0 text-active shadow-sm'
 						: 'text-muted'}"
 					role="tab"
-					aria-selected={activeSection === 'knowledge'}
-					aria-controls="knowledge-panel"
+					aria-selected={activeSection === 'agents'}
+					aria-controls="agents-panel"
 				>
 					<Brain class="h-4 w-4" />
-					{$LL.knowledge()}
+					{$LL.agents()}
 				</button>
 			</div>
 			<div class="border-b bg-shade-2 px-3 pb-3 pt-0">
-				<ButtonNew sitemap={activeSection === 'sessions' ? Sitemap.SESSIONS : Sitemap.AGENTS} />
+				{#if activeSection === 'sessions'}
+					<ButtonNew />
+				{/if}
 			</div>
 
 			<div class="flex flex-1 flex-col overflow-hidden">
@@ -131,13 +133,14 @@
 						{/if}
 					</section>
 					<section
-						id="knowledge-panel"
+						id="agents-panel"
 						class="h-full"
-						aria-labelledby="knowledge-tab"
-						hidden={activeSection !== 'knowledge'}
+						aria-labelledby="agents-tab"
+						hidden={activeSection !== 'agents'}
 					>
-						{#if activeSection === 'knowledge'}
+						{#if activeSection === 'agents'}
 							<SectionList>
+								<!--
 								{#if $knowledgeStore && $knowledgeStore.length > 0}
 									{#each $knowledgeStore as knowledge (knowledge.id)}
 										<SectionListItem
@@ -150,6 +153,8 @@
 								{:else}
 									<EmptyMessage>{$LL.emptyKnowledge()}</EmptyMessage>
 								{/if}
+								-->
+								<EmptyMessage>{$LL.emptyKnowledge()}</EmptyMessage>
 							</SectionList>
 						{/if}
 					</section>

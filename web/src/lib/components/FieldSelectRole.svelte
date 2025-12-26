@@ -9,19 +9,18 @@
 		value?: string;
 	}
 
-	let { value = $bindable() }: Props = $props();
-
-	const disabled = $derived(!$settingsStore.roles?.length);
-	const models = $derived($settingsStore.roles?.map(formatModelToSelectOption));
-
 	type RoleOption = {
 		value: string;
 		label: string;
 		badge?: string | string[];
 	};
 
+	let { value = $bindable() }: Props = $props();
+	const disabled = $derived(!$settingsStore.roles?.length);
+	const models = $derived($settingsStore.roles?.map(formatModelToSelectOption));
+
 	function formatModelToSelectOption(role: Role): RoleOption {
-		return { value: role.deviceId + " " + role.roleId, label: role.name, badge: [] };
+		return { value: role.deviceId + " " + role.roleId, label: role.deviceId + ":" + role.name, badge: [] };
 	}
 
 	// Auto-select model when there is only one available
@@ -33,7 +32,7 @@
 <FieldSelect
 	name="model"
 	{disabled}
-	placeholder={$LL.availableModels()}
+	placeholder={$LL.availableRoles()}
 	label={$LL.availableRoles()}
 	isLabelVisible={true}
 	options={models}

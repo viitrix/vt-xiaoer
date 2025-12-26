@@ -7,10 +7,8 @@
 	import Badge from '$lib/components/Badge.svelte';
 	import Button from '$lib/components/Button.svelte';
 	import ButtonCopy from '$lib/components/ButtonCopy.svelte';
-	import { generateNewUrl } from '$lib/components/ButtonNew';
 	import Markdown from '$lib/components/Markdown.svelte';
 	import { type Message } from '$lib/sessions';
-	import { Sitemap } from '$lib/sitemap';
 
 	import AttachmentImage from './AttachmentImage.svelte';
 
@@ -34,8 +32,7 @@
 		currentRawCompletion?: string;
 	} = $props();
 
-	const isKnowledgeAttachment = $derived(message.knowledge?.name !== undefined);
-	const isUserRole = $derived(message.role === 'user' && !isKnowledgeAttachment);
+	const isUserRole = $derived(message.role === 'user');
 	let isReasoningVisible = $state(false);
 	let userHasInteractedWithToggle = $state(false);
 
@@ -70,97 +67,55 @@
 	});
 </script>
 
-{#if isKnowledgeAttachment}
-	<article class="attachment">
-		<div class="attachment__content">
-			<div class="attachment__icon">
-				<Brain class="base-icon" />
-			</div>
-			<div class="attachment__name">
-				<Button variant="link" href={generateNewUrl(Sitemap.KNOWLEDGE, message.knowledge?.id)}>
-					{message.knowledge?.name}
-				</Button>
-			</div>
-		</div>
-		<div class="attachment__interactive">
-			<Button
-				variant="icon"
-				onclick={() => handleDeleteAttachment && handleDeleteAttachment(message)}
-			>
-				<Trash2 class="base-icon" />
-			</Button>
-		</div>
-	</article>
-{:else}
-	<article class="article article--{message.role}">
-		<nav class="article__nav">
-			<div data-testid="session-role" class="article__role">
-				<Badge>
-					{#if isUserRole}
-						{$LL.you()}
-					{:else if message.role === 'assistant'}
-						{$LL.assistant()}
-					{:else}
-						{$LL.system()}
-					{/if}
-				</Badge>
-			</div>
-			<div class="article__interactive">
-				{#if retryIndex}
-					<Button
-						title={$LL.retry()}
-						variant="icon"
-						id="retry-index-{retryIndex}"
-						onclick={() => handleRetry && handleRetry(retryIndex)}
-					>
-						<RefreshCw class="base-icon" />
-					</Button>
-				{/if}
-				{#if isUserRole}
-					<Button
-						title={$LL.edit()}
-						variant="icon"
-						onclick={() => handleEditMessage && handleEditMessage(message)}
-					>
-						<Pencil class="base-icon" />
-					</Button>
-				{/if}
-				<ButtonCopy content={message.content} />
-			</div>
-		</nav>
 
-		{#if message.reasoning}
-			<div class="reasoning" transition:slide={{ easing: quadInOut, duration: 200 }}>
-				<button class="reasoning__button" onclick={toggleReasoningVisibility}>
-					{$LL.reasoning()}
-					{#if isReasoningVisible}
-						<ChevronUp class="base-icon" />
-					{:else}
-						<ChevronDown class="base-icon" />
-					{/if}
-				</button>
-				{#if isReasoningVisible}
-					<article
-						class="article article--reasoning"
-						transition:slide={{ easing: quadInOut, duration: 200 }}
-					>
-						<Markdown markdown={message.reasoning} />
-					</article>
+<article class="article article--{message.role}">
+	<nav class="article__nav">
+		<div data-testid="session-role" class="article__role">
+			<Badge>
+				{#if isUserRole}
+					{$LL.you()}
+				{:else if message.role === 'assistant'}
+					{$LL.assistant()}
+				{:else}
+					{$LL.system()}
 				{/if}
-			</div>
-		{/if}
-		{#if message.content}
-			<Markdown markdown={message.content} />
-		{/if}
-		{#if message.images && message.images.length}
-			<div class="article__images">
-				{#each message.images as img (img.filename)}
-					<AttachmentImage dataUrl={`data:image/png;base64,${img.data}`} name={img.filename} />
-				{/each}
-			</div>
-		{/if}
-	</article>
-{/if}
+			</Badge>
+		</div>
+		<div class="article__interactive">
+			{#if retryIndex}
+				<Button
+					title={$LL.retry()}
+					variant="icon"
+					id="retry-index-{retryIndex}"
+					onclick={() => handleRetry && handleRetry(retryIndex)}
+				>
+					<RefreshCw class="base-icon" />
+				</Button>
+			{/if}
+			{#if isUserRole}
+				<Button
+					title={$LL.edit()}
+					variant="icon"
+					onclick={() => handleEditMessage && handleEditMessage(message)}
+				>
+					<Pencil class="base-icon" />
+				</Button>
+			{/if}
+			<ButtonCopy content={message.content} />
+		</div>
+	</nav>
+	{#if message.content}
+		<Markdown markdown={message.content} />
+	{/if}
+	{#if message.images && message.images.length}
+		<div class="article__images">
+			{#each message.images as img (img.filename)}
+				<AttachmentImage dataUrl={`data:image/png;base64,${img.data}`} name={img.filename} />
+			{/each}
+		</div>
+	{/if}
+</article>
+
 
 <style lang="postcss">
 	.article {
