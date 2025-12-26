@@ -5,4 +5,4 @@
 </script>
 
 <Head title={$LL.agents()} />
-<EmptyMessage>{$LL.noKnowledgeChosen()}</EmptyMessage>
+<EmptyMessage>{$LL.noAgentChosen()}</EmptyMessage>
