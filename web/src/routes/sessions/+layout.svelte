@@ -2,45 +2,23 @@
 	import { type Snippet } from 'svelte';
 
 	import { browser } from '$app/environment';
-	import { getLastUsedModels } from '$lib/chat';
-	import { OllamaStrategy } from '$lib/chat/ollama';
-	import { OpenAIStrategy } from '$lib/chat/openai';
 	import RobotsNoIndex from '$lib/components/RobotsNoIndex.svelte';
-	import { ConnectionType } from '$lib/connections';
-	import { serversStore, settingsStore } from '$lib/localStorage';
-	import { type Model } from '$lib/settings';
+	import { devicesStore, settingsStore } from '$lib/localStorage';
+	import { type Role } from '$lib/devices';
 
 	let { children }: { children: Snippet } = $props();
 
-	async function listModels(): Promise<Model[]> {
-		const models: Model[] = [];
+	async function listRoles(): Promise<Role[]> {
+		const roles: Role[] = [];
 
-		for (const server of $serversStore) {
-			if (!server.isEnabled) continue;
-
-			switch (server.connectionType) {
-				case ConnectionType.Ollama:
-					models.push(...(await new OllamaStrategy(server).getModels().catch(() => [])));
-					break;
-				case ConnectionType.OpenAI:
-				case ConnectionType.OpenAICompatible:
-					models.push(...(await new OpenAIStrategy(server).getModels().catch(() => [])));
-					break;
-			}
-		}
-
-		return models.sort((a, b) => {
-			const nameA = a.name;
-			const nameB = b.name;
-			return nameA.localeCompare(nameB, undefined, { sensitivity: 'base' });
-		});
+		// 从设备服务获得角色列表
+		return roles;
 	}
 
 	$effect(() => {
 		if (browser) {
-			listModels().then((models) => {
-				$settingsStore.models = models;
-				$settingsStore.lastUsedModels = getLastUsedModels();
+			listRoles().then((roles) => {
+				$settingsStore.roles = roles;
 			});
 		}
 	});
