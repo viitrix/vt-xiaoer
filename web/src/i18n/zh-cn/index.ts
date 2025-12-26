@@ -16,6 +16,7 @@ const zh_cn = {
 	automatic: '自动',
 	automaticallyCheckForUpdates: '自动检查更新',
 	availableModels: '可用模型',
+	availableRoles: '可用角色',
 	baseUrl: '基础 URL',
 	browseModels: '浏览可用模型',
 	cancel: '取消',

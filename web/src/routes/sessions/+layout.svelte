@@ -9,6 +9,7 @@
 	let { children }: { children: Snippet } = $props();
 
 	async function listRoles(): Promise<Role[]> {
+		// TODO 从服务端获得 角色 列表
 		const roles: Role[] = [];
 		let r : Role = {
 			name: '沙县小吃店小二',

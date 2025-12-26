@@ -10,8 +10,19 @@
 	import Head from '$lib/components/Head.svelte';
 	import Header from '$lib/components/Header.svelte';
 	import Metadata from '$lib/components/Metadata.svelte';
+	import { Sitemap } from '$lib/sitemap';
 	import { devicesStore, settingsStore } from '$lib/localStorage';
 	import type { PageData } from './$types';
+	import {
+		formatSessionMetadata,
+		getSessionTitle,
+		loadSession,
+		saveSession,
+		type Editor,
+		type Message
+	} from '$lib/sessions';
+
+	import Prompt from './Prompt.svelte';
 
 	interface Props {
 		data: PageData;
@@ -19,38 +30,48 @@
 
 	let { data }: Props = $props();
 
+	let session = $state(loadSession(data.id));
 	
+	let editor = $state<Editor>({
+		prompt: '',
+		messageIndexToEdit: null,
+		isCodeEditor: false,
+		isCompletionInProgress: false,
+		shouldFocusTextarea: false,
+		isNewSession: true
+	});
+	let messagesWindow: HTMLDivElement | undefined = $state();
+	let roleName: string | undefined = $state();
+	let userScrolledUp = $state(false);
+	let shouldConfirmDeletion = $state(false);
+
 	$effect(() => {
-		//if (data.id !== session.id) handleSessionChange();
+		if (data.id !== session.id) handleSessionChange();
 	});
 
 	$effect(() => {
-		//session.model = $settingsStore.models.find((m) => m.name === modelName);
+		session.role = $settingsStore.roles.find((m) => m.name === roleName);
 	});
 
 	$effect(() => {
-		/*
 		if (editor.shouldFocusTextarea && editor.promptTextarea) {
 			editor.promptTextarea.focus();
 			editor.shouldFocusTextarea = false;
 		}
-		*/
 	});
 
 	onMount(async () => {
-		/*
 		handleSessionChange();
 		await scrollToBottom();
 		messagesWindow?.addEventListener('scroll', handleScroll);
-		*/
 	});
 
 	beforeNavigate((navigation) => {
-		/*
 		if (editor.isCompletionInProgress) {
 			const userConfirmed = confirm($LL.areYouSureYouWantToLeave());
 			if (userConfirmed) {
-				stopCompletion();
+				// TODO 
+				//stopCompletion();
 				return;
 			}
 			navigation.cancel();
@@ -68,13 +89,70 @@
 				navigation.cancel();
 			}
 		}
-		*/
 	});
+
+	function handleScroll() {
+		if (!messagesWindow) return;
+		const { scrollTop, scrollHeight, clientHeight } = messagesWindow;
+		userScrolledUp = scrollTop + clientHeight < scrollHeight;
+	}
+
+	async function handleSessionChange() {
+		session = loadSession(data.id);
+		roleName = session.role?.name || '';
+		editor.isNewSession = !session?.messages?.length;
+		scrollToBottom();
+	}
+	
+	async function scrollToBottom(shouldForceScroll = false) {
+		if (!shouldForceScroll && (!messagesWindow || userScrolledUp)) return;
+		await tick();
+		requestAnimationFrame(() => {
+			if (messagesWindow) messagesWindow.scrollTop = messagesWindow.scrollHeight;
+		});
+	}
+
+	function handleSubmit(images?: { data: string; filename: string }[]) {
+	}
+	function stopCompletion() {
+	}
 
 </script>
 
 <div class="session">
-	<Head title={[$LL.newSession(), $LL.sessions()]}/>
+	<Head
+		title={[editor.isNewSession ? $LL.newSession() : getSessionTitle(session), $LL.sessions()]}
+	/>
+
+	<Header confirmDeletion={shouldConfirmDeletion}>
+		{#snippet headline()}
+			<p data-testid="session-id" class="font-bold leading-none">
+				{$LL.session()}
+				<Button variant="link" href={`/sessions/${session.id}`}>#{session.id}</Button>
+			</p>
+			<Metadata dataTestid="session-metadata">
+				{editor.isNewSession ? $LL.newSession() : formatSessionMetadata(session)}
+			</Metadata>
+		{/snippet}
+
+		{#snippet nav()}
+			{#if !editor.isNewSession}
+				{#if !shouldConfirmDeletion}
+					<ButtonCopy content={JSON.stringify(session.messages, null, 2)} />
+				{/if}
+				<ButtonDelete sitemap={Sitemap.SESSIONS} id={session.id} bind:shouldConfirmDeletion />
+			{/if}
+		{/snippet}
+	</Header>
+
+	<Prompt
+		bind:session
+		bind:editor
+		bind:roleName
+		{handleSubmit}
+		{stopCompletion}
+		{scrollToBottom}
+	/>
 	
 </div>
 

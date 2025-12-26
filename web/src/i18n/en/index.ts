@@ -18,6 +18,7 @@ const en = {
 	automatic: 'Auto',
 	automaticallyCheckForUpdates: 'Automatically check for updates',
 	availableModels: 'Available models',
+	availableRoles: 'Available roles',
 	baseUrl: 'Base URL',
 	browseModels: 'Browse the list of available models',
 	cancel: 'Cancel',

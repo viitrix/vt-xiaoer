@@ -2,6 +2,6 @@
 	import { goto } from '$app/navigation';
 
 	$effect.pre(() => {
-	    goto('/motd');
+	    goto('/settings');
     });
 </script>

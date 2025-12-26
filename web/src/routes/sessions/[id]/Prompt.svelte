@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { Brain, CircleStop, Image, LoaderCircle, UnfoldVertical } from 'lucide-svelte';
-	import MessageSquareText from 'lucide-svelte/icons/message-square-text';
-	import Settings_2 from 'lucide-svelte/icons/settings-2';
+	import { CircleStop, Image, LoaderCircle, UnfoldVertical } from 'lucide-svelte';
 	import Trash_2 from 'lucide-svelte/icons/trash-2';
 	import { toast } from 'svelte-sonner';
 
@@ -9,36 +7,23 @@
 	import Button from '$lib/components/Button.svelte';
 	import ButtonSubmit from '$lib/components/ButtonSubmit.svelte';
 	import Field from '$lib/components/Field.svelte';
-	import FieldSelectModel from '$lib/components/FieldSelectModel.svelte';
+	import FieldSelectRole from '$lib/components/FieldSelectRole.svelte';
 	import FieldTextEditor from '$lib/components/FieldTextEditor.svelte';
-	import { ConnectionType } from '$lib/connections';
-	import { loadKnowledge, type Knowledge } from '$lib/knowledge';
-	import { knowledgeStore, serversStore } from '$lib/localStorage';
+	import { devicesStore } from '$lib/localStorage';
 	import type { Editor, Message, Session } from '$lib/sessions';
 	import { generateRandomId } from '$lib/utils';
 
 	import AttachmentImage from './AttachmentImage.svelte';
-	import KnowledgeSelect from './KnowledgeSelect.svelte';
-
-	type KnowledgeAttachment = {
-		type: 'knowledge';
-		fieldId: string;
-		knowledge?: Knowledge;
-	};
-
 	type ImageAttachment = {
-		type: 'image';
 		id: string;
 		name: string;
 		dataUrl: string;
 	};
 
-	type Attachment = KnowledgeAttachment | ImageAttachment;
-
 	interface Props {
 		editor: Editor;
 		session: Session;
-		modelName: string | undefined;
+		roleName: string | undefined;
 		handleSubmit: (images?: { data: string; filename: string }[]) => void;
 		stopCompletion: () => void;
 		scrollToBottom: (shouldForceScroll: boolean) => void;
@@ -47,18 +32,14 @@
 	let {
 		editor = $bindable(),
 		session = $bindable(),
-		modelName = $bindable(),
+		roleName = $bindable(),
 		handleSubmit,
 		stopCompletion,
 		scrollToBottom
 	}: Props = $props();
 
-	let attachments: Attachment[] = $state([]);
+	let attachments: ImageAttachment[] = $state([]);
 
-	const isOllamaFamily = $derived(
-		$serversStore.find((s) => s.id === session.model?.serverId)?.connectionType ===
-			ConnectionType.Ollama
-	);
 
 	$effect(() => {
 		if (attachments.length) scrollToBottom(true);
@@ -73,19 +54,6 @@
 	function toggleCodeEditor() {
 		editor.isCodeEditor = !editor.isCodeEditor;
 		editor.shouldFocusTextarea = !editor.isCodeEditor;
-	}
-
-	function switchToMessages() {
-		editor.view = 'messages';
-		scrollToBottom(true);
-	}
-
-	function switchToControls() {
-		if (!isOllamaFamily) {
-			toast.warning($LL.controlsOnlyAvailableForOllama());
-			return;
-		}
-		editor.view = 'controls';
 	}
 
 	function handleKeyDown(event: KeyboardEvent) {
@@ -135,7 +103,6 @@
 						const filename = `pasted-image-${timestamp}-${index + 1}.${extension}`;
 
 						newAttachments.push({
-							type: 'image',
 							id: generateRandomId(),
 							name: filename,
 							dataUrl
@@ -161,14 +128,6 @@
 		});
 	}
 
-	function handleSelectKnowledge(fieldId: string, knowledgeId: string) {
-		attachments = attachments.map((a) =>
-			a.type === 'knowledge' && a.fieldId === fieldId
-				? { ...a, knowledge: loadKnowledge(knowledgeId) }
-				: a
-		);
-	}
-
 	function handleImageUploadClick() {
 		const input = document.createElement('input');
 		input.type = 'file';
@@ -179,7 +138,7 @@
 			if (!files || files.length === 0) return;
 
 			const allowedTypes = ['image/png', 'image/jpeg'];
-			const newAttachments: Attachment[] = [];
+			const newAttachments: ImageAttachment[] = [];
 			let unsupportedFiles = false;
 
 			const filePromises = Array.from(files).map((file) => {
@@ -225,33 +184,11 @@
 
 	function handleDeleteAttachment(id: string) {
 		attachments = [
-			...attachments.filter((a) => (a.type === 'knowledge' ? a.fieldId : a.id) !== id)
+			...attachments.filter((a) => a.id !== id)
 		];
 	}
 
 	function submit() {
-		const knowledgeAttachments = attachments.filter(
-			(a): a is KnowledgeAttachment => a.type === 'knowledge'
-		);
-		if (knowledgeAttachments.length) {
-			const knowledgeAttachmentMessages: Message[] = [];
-			attachments.forEach((a) => {
-				if (a.type === 'knowledge' && a.knowledge)
-					knowledgeAttachmentMessages.push({
-						role: 'user',
-						knowledge: a.knowledge,
-						content: `
-<CONTEXT>
-	<CONTEXT_NAME>${a.knowledge.name}</CONTEXT_NAME>
-	<CONTEXT_CONTENT>${a.knowledge.content}</CONTEXT_CONTENT>
-</CONTEXT>
-`
-					});
-			});
-			session.messages = [...session.messages, ...knowledgeAttachmentMessages];
-			attachments = attachments.filter((a) => a.type !== 'knowledge');
-		}
-
 		const imageAttachments = attachments.filter((a): a is ImageAttachment => a.type === 'image');
 		const imagesPayload = imageAttachments.map((a) => ({
 			filename: a.name,
@@ -266,41 +203,7 @@
 <div class="prompt-editor {editor.isCodeEditor ? 'prompt-editor--fullscreen' : ''}">
 	<div class="prompt-editor__form">
 		<div class="prompt-editor__project">
-			<FieldSelectModel isLabelVisible={false} bind:value={modelName} />
-
-			<nav class="segmented-nav">
-				<div
-					class="segmented-nav__button {editor.view === 'messages'
-						? 'segmented-nav__button--active'
-						: ''}"
-				>
-					<Button
-						aria-label={$LL.messages()}
-						variant="icon"
-						onclick={switchToMessages}
-						class="h-full"
-						isActive={editor.view === 'messages'}
-					>
-						<MessageSquareText class="base-icon" />
-					</Button>
-				</div>
-				<div
-					class="segmented-nav__button {editor.view === 'controls'
-						? 'segmented-nav__button--active'
-						: ''}"
-				>
-					<Button
-						aria-label={$LL.controls()}
-						variant="icon"
-						onclick={switchToControls}
-						class="h-full"
-						isActive={editor.view === 'controls'}
-					>
-						<Settings_2 class="base-icon" />
-					</Button>
-				</div>
-			</nav>
-
+			<FieldSelectRole bind:value={roleName} />
 			<Button
 				variant={editor.isCodeEditor ? 'default' : 'outline'}
 				class="prompt-editor__toggle"
@@ -328,36 +231,13 @@
 
 		{#if attachments.length}
 			<div class="attachments">
-				{#each attachments as attachment (attachment.type === 'knowledge' ? attachment.fieldId : attachment.id)}
+				{#each attachments as attachment }
 					<div class="attachment">
-						{#if attachment.type === 'knowledge'}
-							<div class="attachment__knowledge">
-								<KnowledgeSelect
-									value={attachment.knowledge?.id}
-									options={$knowledgeStore?.filter(
-										(k) =>
-											// Only filter out knowledge that's selected in OTHER attachments
-											!attachments.find((a) => {
-												if (a.type !== 'knowledge' || attachment.type !== 'knowledge') return false;
-												return a.fieldId !== attachment.fieldId && a.knowledge?.id === k.id;
-											})
-									)}
-									showLabel={false}
-									fieldId={`attachment-${attachment.fieldId}`}
-									onChange={(knowledgeId) =>
-										knowledgeId && handleSelectKnowledge(attachment.fieldId, knowledgeId)}
-									allowClear={false}
-								/>
-							</div>
-						{:else if attachment.type === 'image'}
-							<AttachmentImage dataUrl={attachment.dataUrl} name={attachment.name} />
-						{/if}
+						<AttachmentImage dataUrl={attachment.dataUrl} name={attachment.name} />
 						<Button
 							variant="outline"
 							onclick={() =>
-								handleDeleteAttachment(
-									attachment.type === 'knowledge' ? attachment.fieldId : attachment.id
-								)}
+								handleDeleteAttachment( attachment.id)}
 							data-testid="attachment-delete"
 						>
 							<Trash_2 class="base-icon" />
@@ -369,15 +249,6 @@
 
 		<nav class="prompt-editor__toolbar">
 			<div class="attachments-toolbar">
-				<Button
-					variant="outline"
-					onclick={() => {
-						attachments = [...attachments, { type: 'knowledge', fieldId: generateRandomId() }];
-					}}
-					data-testid="knowledge-attachment"
-				>
-					<Brain class="base-icon" />
-				</Button>
 				<Button
 					variant="outline"
 					onclick={handleImageUploadClick}
@@ -407,7 +278,7 @@
 					handleSubmit={submit}
 					hasMetaKey={editor.isCodeEditor}
 					disabled={(!editor.prompt && !attachments.filter((a) => a.type === 'image').length) ||
-						!session.model ||
+						!session.role ||
 						editor.isCompletionInProgress}
 				>
 					{$LL.run()}

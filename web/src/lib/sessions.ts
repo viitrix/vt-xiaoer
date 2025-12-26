@@ -20,7 +20,6 @@ export interface Session {
 
 export interface Editor {
 	prompt: string;
-	view: 'messages' | 'controls';
 	messageIndexToEdit: number | null;
 	isCodeEditor: boolean;
 	isCompletionInProgress: boolean;
@@ -28,7 +27,6 @@ export interface Editor {
 	shouldFocusTextarea: boolean;
 	attachments?: { type: 'image'; id: string; name: string; dataUrl: string }[];
 	completion?: string;
-	reasoning?: string;
 	promptTextarea?: HTMLTextAreaElement;
 	abortController?: AbortController;
 }

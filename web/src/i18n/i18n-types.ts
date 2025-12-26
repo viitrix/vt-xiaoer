@@ -80,6 +80,10 @@ type RootTranslation = {
 	 */
 	availableModels: string
 	/**
+	 * A​v​a​i​l​a​b​l​e​ ​r​o​l​e​s
+	 */
+	availableRoles: string
+	/**
 	 * B​a​s​e​ ​U​R​L
 	 */
 	baseUrl: string
@@ -798,6 +802,10 @@ The completion in progress will stop
 	 * Available models
 	 */
 	availableModels: () => LocalizedString
+	/**
+	 * Available roles
+	 */
+	availableRoles: () => LocalizedString
 	/**
 	 * Base URL
 	 */
