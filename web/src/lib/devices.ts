@@ -1,7 +1,6 @@
 import { generateRandomId } from './utils';
 
 export interface Role {
-    apiKey: string;
     name: string;
 }
 
@@ -13,18 +12,18 @@ export enum DeviceType {
 export interface Device {
 	id: string;
     deviceId: string; 
-    label: string;
+    apiKey: string;
     isVerified: boolean;
-    dType: DeviceType;
+    deviceType: DeviceType;
 }
 
 export function getDefaultDevice(deviceType: DeviceType): Device {
     return {
         id: generateRandomId(),
-        deviceId : 'XXX_设备ID_XXX',
-        lable: '__标记__',
+        deviceId : 'VT_XXXX_XXXX',
+        apiKey: "SkXXXXXXXXXXXXXXX",
         isVerified: false,
-        dType: deviceType
+        deviceType: deviceType
     }
 }
 

@@ -6,7 +6,6 @@
 	import LL from '$i18n/i18n-svelte';
 	import Badge from '$lib/components/Badge.svelte';
 	import Button from '$lib/components/Button.svelte';
-	import FieldCheckbox from '$lib/components/FieldCheckbox.svelte';
 	import FieldHelp from '$lib/components/FieldHelp.svelte';
 	import FieldInput from '$lib/components/FieldInput.svelte';
 	import Fieldset from '$lib/components/Fieldset.svelte';
@@ -19,40 +18,65 @@
 	}
 
 	let { index }: Props = $props();
-	let server: Device = $state($devicesStore[index]);
+	let device : Device = $state($devicesStore[index]);
 	let isLoading = $state(false);
 
 	$effect(() => {
-        devicesStore.update((servers) => {
-			servers.splice(index, 1, server);
-			return servers;
+        devicesStore.update((devices) => {
+			devices.splice(index, 1, device);
+			return devices;
 		});
 	});
 
-	async function verifyServer() {
+	async function verifyDevice() {
 		isLoading = true;
 		const toastId = toast.loading($LL.connecting());
-
 		toast.success($LL.connectionIsVerified(), { id: toastId });
 		isLoading = false;
 	}
 
-	function deleteServer() {
-		devicesStore.update((servers) => servers.filter((s) => s.id !== server.id));
+	function deleteDevice() {
+		devicesStore.update((devices) => devices.filter((s) => s.id !== device.id));
 	}
 </script>
 
-<div data-testid="server">
+<div>
 	<Fieldset>
 		{#snippet legend()}
-        <Badge>{server.label ? server.label : server.dType?.toUpperCase()}</Badge>
+        <Badge>{device.deviceType}</Badge>
 		{/snippet}
 		<Fieldset>
+			<div class="flex flex-col gap-2 sm:grid sm:grid-cols-2">	
+				<FieldInput
+					name={`label-${device.id}`}
+					label={$LL.deviceId()}
+					bind:value={device.deviceId}
+					placeholder={device.deviceId}
+				>
+					<svelte:fragment slot="help">
+						<FieldHelp>
+							<P>{$LL.deviceIdHelp()}</P>
+						</FieldHelp>
+					</svelte:fragment>
+				</FieldInput>
+				<FieldInput
+					name={`label-${device.id}`}
+					label={$LL.deviceApiKey()}
+					bind:value={device.apiKey}
+					placeholder={device.apiKey}
+				>
+					<svelte:fragment slot="help">
+						<FieldHelp>
+							<P>{$LL.deviceApiKeyHelp()}</P>
+						</FieldHelp>
+					</svelte:fragment>
+				</FieldInput>
+			</div>
 			<nav class="flex items-stretch gap-x-2">
 				<Button
 					class="max-h-full"
 					variant="outline"
-					on:click={deleteServer}
+					on:click={deleteDevice}
 					aria-label={$LL.deleteServer()}
 				>
 					<Trash_2 class="base-icon" />
@@ -60,53 +84,16 @@
 
 				<Button
 					disabled={isLoading}
-					variant={!server.isVerified ? 'default' : 'outline'}
-					on:click={verifyServer}
+					variant={!device.isVerified ? 'default' : 'outline'}
+					on:click={verifyDevice}
 				>
 					{#if isLoading}
 						<LoaderCircle class="base-icon animate-spin" />
 					{:else}
-						{server.isVerified ? $LL.reVerify() : $LL.verify()}
+						{device.isVerified ? $LL.reVerify() : $LL.verify()}
 					{/if}
 				</Button>
 			</nav>
-			
-				
-			<div class="flex flex-col gap-2 sm:grid sm:grid-cols-2">
-				<div class="col-span-2 grid gap-2">
-					<FieldInput
-						name={`server-${server.id}`}
-						label={$LL.baseUrl()}
-						placeholder={server.deviceId}
-						bind:value={server.deviceId}
-					>
-					</FieldInput>
-				</div>	
-				<FieldInput
-					name={`label-${server.id}`}
-					label={$LL.label()}
-					bind:value={server.label}
-					placeholder="my-llama-server"
-				>
-					<svelte:fragment slot="help">
-						<FieldHelp>
-							<P>{$LL.connectionLabelHelp()}</P>
-						</FieldHelp>
-					</svelte:fragment>
-				</FieldInput>
-				<FieldInput
-					name={`label-${server.id}`}
-					label={$LL.label()}
-					bind:value={server.label}
-					placeholder="my-llama-server"
-				>
-					<svelte:fragment slot="help">
-						<FieldHelp>
-							<P>{$LL.connectionLabelHelp()}</P>
-						</FieldHelp>
-					</svelte:fragment>
-				</FieldInput>
-			</div>
 		</Fieldset>
 	</Fieldset>
 </div>

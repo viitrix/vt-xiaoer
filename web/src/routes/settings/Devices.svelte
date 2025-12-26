@@ -30,8 +30,8 @@
 				<FieldSelect
 					name="deviceType"
 					isLabelVisible={false}
-					label={$LL.connectionType()}
-					placeholder={$LL.connectionType()}
+					label={$LL.deviceType()}
+					placeholder={$LL.deviceType()}
 					options={[
 						{ value: DeviceType.VTCamera, label: "ZN04摄像头"  },
 						{ value: DeviceType.VTSpeaker, label: "ESP32音箱" },
@@ -40,7 +40,7 @@
 				/>
 			{/key}
 			<Button disabled={!newDeviceType} on:click={addDevice}>
-				{$LL.addConnection()}
+				{$LL.addDevice()}
 			</Button>
 		</div>
 	</div>
@@ -50,7 +50,7 @@
 			<div
 				class="col-span-full -mt-3 flex text-balance rounded-md border border-shade-3 text-center"
 			>
-				<EmptyMessage>{$LL.noServerConnections()}</EmptyMessage>
+				<EmptyMessage>{$LL.noDevices()}</EmptyMessage>
 			</div>
 		{/if}
 

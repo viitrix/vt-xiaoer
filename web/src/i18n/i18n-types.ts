@@ -19,6 +19,10 @@ type RootTranslation = {
 	 */
 	addConnection: string
 	/**
+	 * A​d​d​ ​D​e​v​i​c​e
+	 */
+	addDevice: string
+	/**
 	 * C​h​a​n​g​e​ ​y​o​u​r​ ​s​e​r​v​e​r​ ​s​e​t​t​i​n​g​s​ ​t​o​ ​a​l​l​o​w​ ​c​o​n​n​e​c​t​i​o​n​s​ ​f​r​o​m
 	 */
 	allowConnections: string
@@ -180,6 +184,10 @@ type RootTranslation = {
 	 */
 	'delete': string
 	/**
+	 * D​e​l​e​t​e​ ​D​e​v​i​c​e
+	 */
+	deleteDevice: string
+	/**
 	 * D​e​l​e​t​e​ ​k​n​o​w​l​e​d​g​e
 	 */
 	deleteKnowledge: string
@@ -195,6 +203,26 @@ type RootTranslation = {
 	 * V​i​i​t​r​i​x​ ​D​e​v​i​c​e​s
 	 */
 	devices: string
+	/**
+	 * A​P​I​ ​K​e​y
+	 */
+	deviceApiKey: string
+	/**
+	 * S​c​a​n​ ​t​h​e​ ​Q​R​ ​c​o​d​e
+	 */
+	deviceApiKeyHelp: string
+	/**
+	 * D​e​v​i​c​e​ ​S​e​r​i​a​l​ ​N​u​m​b​e​r
+	 */
+	deviceId: string
+	/**
+	 * C​h​e​c​k​ ​t​h​e​ ​p​r​i​n​t​e​d​ ​l​a​b​e​l
+	 */
+	deviceIdHelp: string
+	/**
+	 * D​e​v​i​c​e​ ​T​y​p​e
+	 */
+	deviceType: string
 	/**
 	 * D​i​s​c​o​n​n​e​c​t​e​d
 	 */
@@ -380,6 +408,10 @@ type RootTranslation = {
 	 * N​o​ ​A​P​I​ ​k​e​y
 	 */
 	noApiKey: string
+	/**
+	 * N​o​ ​d​e​i​v​c​e​s​,​ ​a​d​d​ ​o​n​e​ ​t​o​ ​s​t​a​r​t
+	 */
+	noDevices: string
 	/**
 	 * C​r​e​a​t​e​ ​n​e​w​ ​k​n​o​w​l​e​d​g​e​ ​o​r​ ​c​h​o​o​s​e​ ​o​n​e​ ​f​r​o​m​ ​t​h​e​ ​l​i​s​t
 	 */
@@ -702,6 +734,10 @@ export type TranslationFunctions = {
 	 */
 	addConnection: () => LocalizedString
 	/**
+	 * Add Device
+	 */
+	addDevice: () => LocalizedString
+	/**
 	 * Change your server settings to allow connections from
 	 */
 	allowConnections: () => LocalizedString
@@ -863,6 +899,10 @@ The completion in progress will stop
 	 */
 	'delete': () => LocalizedString
 	/**
+	 * Delete Device
+	 */
+	deleteDevice: () => LocalizedString
+	/**
 	 * Delete knowledge
 	 */
 	deleteKnowledge: () => LocalizedString
@@ -878,6 +918,26 @@ The completion in progress will stop
 	 * Viitrix Devices
 	 */
 	devices: () => LocalizedString
+	/**
+	 * API Key
+	 */
+	deviceApiKey: () => LocalizedString
+	/**
+	 * Scan the QR code
+	 */
+	deviceApiKeyHelp: () => LocalizedString
+	/**
+	 * Device Serial Number
+	 */
+	deviceId: () => LocalizedString
+	/**
+	 * Check the printed label
+	 */
+	deviceIdHelp: () => LocalizedString
+	/**
+	 * Device Type
+	 */
+	deviceType: () => LocalizedString
 	/**
 	 * Disconnected
 	 */
@@ -1062,6 +1122,10 @@ The completion in progress will stop
 	 * No API key
 	 */
 	noApiKey: () => LocalizedString
+	/**
+	 * No deivces, add one to start
+	 */
+	noDevices: () => LocalizedString
 	/**
 	 * Create new knowledge or choose one from the list
 	 */
