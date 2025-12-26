@@ -2,8 +2,8 @@ import { generateRandomId } from './utils';
 
 export interface Role {
     name: string;
-    serverId: string;
     roleId: string;
+    deviceId: string;
 }
 
 export enum DeviceType {

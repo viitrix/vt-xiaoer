@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { type Snippet } from 'svelte';
+	import { generateRandomId } from '$lib/utils';
 
 	import { browser } from '$app/environment';
 	import RobotsNoIndex from '$lib/components/RobotsNoIndex.svelte';
@@ -11,11 +12,14 @@
 	async function listRoles(): Promise<Role[]> {
 		// TODO 从服务端获得 角色 列表
 		const roles: Role[] = [];
-		let r : Role = {
-			name: '沙县小吃店小二',
-			id: "32324ACD3422"
+		for (const device of $devicesStore) {
+			let r : Role = {
+				name: '沙县小吃店小二',
+				roleId: "32324ACD3422",
+				deviceId: device.deviceId
+			}
+			roles.push(r)
 		}
-		roles.push(r)
 		return roles;
 	}
 

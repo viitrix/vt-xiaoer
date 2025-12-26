@@ -51,7 +51,10 @@
 	});
 
 	$effect(() => {
-		session.role = $settingsStore.roles.find((m) => m.name === roleName);
+		if (roleName) {
+			const rid = roleName.split(' ')[1];
+			session.role = $settingsStore.roles.find((m) => m.roleId === rid);
+		}
 	});
 
 	$effect(() => {

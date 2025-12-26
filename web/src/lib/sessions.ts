@@ -14,7 +14,7 @@ export interface Message {
 export interface Session {
 	id: string;
 	messages: Message[];
-	role?: Role;	
+	role?: Role;
 	updatedAt?: string;
 	title?: string;
 }

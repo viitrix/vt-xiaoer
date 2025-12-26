@@ -21,7 +21,7 @@
 	};
 
 	function formatModelToSelectOption(role: Role): RoleOption {
-		return { value: role.serverId + " " + role.roleId, label: role.name, badge: [] };
+		return { value: role.deviceId + " " + role.roleId, label: role.name, badge: [] };
 	}
 
 	// Auto-select model when there is only one available

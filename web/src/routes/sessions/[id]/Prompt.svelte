@@ -277,7 +277,7 @@
 				<ButtonSubmit
 					handleSubmit={submit}
 					hasMetaKey={editor.isCodeEditor}
-					disabled={(!editor.prompt && !attachments.filter((a) => a.type === 'image').length) ||
+					disabled={(!editor.prompt && !attachments.length) ||
 						!session.role ||
 						editor.isCompletionInProgress}
 				>
