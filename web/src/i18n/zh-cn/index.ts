@@ -129,7 +129,8 @@ const zh_cn = {
 	verify: '验证',
 	version: '版本',
 	writePromptToStart: '写一段提示词以开始新会话',
-	you: '你'
+	you: '你',
+	setupRole: '智能体'
 } satisfies BaseTranslation;
 
 export default zh_cn;

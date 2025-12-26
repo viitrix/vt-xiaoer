@@ -726,6 +726,10 @@ type RootTranslation = {
 	 * C​o​l​l​a​p​s​e​ ​s​i​d​e​b​a​r
 	 */
 	collapseSidebar: string
+	/**
+	 * A​I​ ​A​g​e​n​t​ ​M​a​n​a​g​e​m​e​n​t
+	 */
+	setupRole: string
 }
 
 export type TranslationFunctions = {
@@ -1438,6 +1442,10 @@ The completion in progress will stop
 	 * Collapse sidebar
 	 */
 	collapseSidebar: () => LocalizedString
+	/**
+	 * AI Agent Management
+	 */
+	setupRole: () => LocalizedString
 }
 
 export type Formatters = {}
