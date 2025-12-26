@@ -7,7 +7,8 @@ import { formatTimestampToNow } from './utils';
 export interface Message {
 	role: 'user' | 'assistant';
 	content: string;
-	payload: string;
+	payload?: string;
+	images?: { data: string; filename: string }[]; // Store image data and filename
 }
 
 export interface Session {

@@ -8,10 +8,9 @@
 	interface Props {
 		session: Session;
 		editor: Editor;
-		handleRetry: (index: number) => void;
 	}
 
-	let { session = $bindable(), editor = $bindable(), handleRetry }: Props = $props();
+	let { session = $bindable(), editor = $bindable() }: Props = $props();
 
 	function handleEditMessage(message: Message) {
 		editor.messageIndexToEdit = session.messages.findIndex((m) => m === message);
@@ -41,7 +40,6 @@
 		<Article
 			{message}
 			retryIndex={['assistant', 'system'].includes(message.role) ? i : undefined}
-			{handleRetry}
 			handleEditMessage={() => handleEditMessage(message)}
 			handleDeleteAttachment={() => handleDeleteAttachment(message)}
 		/>
@@ -53,10 +51,9 @@
 		message={{
 			role: 'assistant',
 			content: editor.completion || '...',
-			reasoning: editor.reasoning
 		}}
 		isStreamingArticle={true}
-		currentRawReasoning={editor.reasoning}
+		currentRawReasoning={undefined}
 		currentRawCompletion={editor.completion}
 	/>
 {/if}

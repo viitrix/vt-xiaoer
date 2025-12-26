@@ -21,10 +21,7 @@
 	};
 
 	function formatModelToSelectOption(role: Role): RoleOption {
-		const badges: string[] = [];
-		const modelServer = $devicesStore.find((s) => s.id === role.serverId);
-		badges.push(modelServer?.deviceId || modelServer?.deviceType || '');
-		return { value: role.name, label: role.name, badge: badges };
+		return { value: role.serverId + " " + role.roleId, label: role.name, badge: [] };
 	}
 
 	// Auto-select model when there is only one available

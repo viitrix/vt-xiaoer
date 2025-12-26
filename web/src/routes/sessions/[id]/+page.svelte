@@ -22,6 +22,7 @@
 		type Message
 	} from '$lib/sessions';
 
+	import Messages from './Messages.svelte';
 	import Prompt from './Prompt.svelte';
 
 	interface Props {
@@ -144,7 +145,9 @@
 			{/if}
 		{/snippet}
 	</Header>
-
+	<div class="session__history" bind:this={messagesWindow}>
+		<Messages bind:session bind:editor />
+	</div>
 	<Prompt
 		bind:session
 		bind:editor
