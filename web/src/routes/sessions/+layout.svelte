@@ -10,8 +10,11 @@
 
 	async function listRoles(): Promise<Role[]> {
 		const roles: Role[] = [];
-
-		// 从设备服务获得角色列表
+		let r : Role = {
+			name: '沙县小吃店小二',
+			id: "32324ACD3422"
+		}
+		roles.push(r)
 		return roles;
 	}
 

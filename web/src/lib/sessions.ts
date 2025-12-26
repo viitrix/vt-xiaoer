@@ -1,28 +1,19 @@
 import { get } from 'svelte/store';
-
-import type { OllamaOptions } from '$lib/chat/ollama';
 import { sessionsStore, settingsStore, sortStore } from '$lib/localStorage';
 
-import { getLastUsedModels } from './chat';
-import type { Knowledge } from './knowledge';
-import type { Model } from './settings';
+import type { Role } from './devices';
 import { formatTimestampToNow } from './utils';
 
 export interface Message {
-	role: 'user' | 'assistant' | 'system';
+	role: 'user' | 'assistant';
 	content: string;
-	knowledge?: Knowledge;
-	context?: number[];
-	reasoning?: string;
-	images?: { data: string; filename: string }[]; // Store image data and filename
+	payload: string;
 }
 
 export interface Session {
 	id: string;
 	messages: Message[];
-	systemPrompt: Message;
-	options: Partial<OllamaOptions>;
-	model?: Model;
+	role?: Role;	
 	updatedAt?: string;
 	title?: string;
 }
@@ -48,38 +39,20 @@ export const loadSession = (id: string): Session => {
 	// Retrieve the current sessions
 	const currentSessions = get(sessionsStore);
 
-	const defaultSystemPrompt: Message = {
-		role: 'system',
-		content: ''
-	};
-
 	// Find the session with the given id
 	if (currentSessions) {
 		const existingSession = currentSessions.find((s) => s.id === id);
 		if (existingSession) {
-			session = {
-				...existingSession,
-				// NOTE: `options` and `systemPrompt` are required fields but `existingSessions`
-				// created before this feature was implemented need to be set to the defaults.
-				// Over time we can probably remove them.
-				options: existingSession.options || {},
-				systemPrompt: existingSession.systemPrompt || defaultSystemPrompt
-			};
+			session = existingSession
 		}
 	}
 
 	if (!session) {
-		// Use the last used model
-		const model = getLastUsedModels()[0];
-
 		// Create a new session
 		session = {
 			id,
-			model,
-			systemPrompt: defaultSystemPrompt,
 			updatedAt: new Date().toISOString(),
 			messages: [],
-			options: {}
 		};
 	}
 
@@ -106,16 +79,12 @@ export const saveSession = (session: Session): void => {
 
 	// Update the store with the sorted sessions
 	sessionsStore.set(sortedSessions);
-
-	// Update the last used models
-	const lastUsedModels = getLastUsedModels();
-	settingsStore.update((settings) => ({ ...settings, lastUsedModels }));
 };
 
 export function formatSessionMetadata(session: Session) {
 	const subtitles: string[] = [];
 	if (session.updatedAt) subtitles.push(formatTimestampToNow(session.updatedAt));
-	if (session.model) subtitles.push(session.model.name);
+	if (session.role) subtitles.push(session.role.name);
 	return subtitles.join(' • ');
 }
 
@@ -123,7 +92,7 @@ export function getSessionTitle(session: Session) {
 	if (session.title) return session.title;
 
 	const firstUserMessage = session.messages.find(
-		(m) => m.role === 'user' && m.content && !m.knowledge
+		(m) => m.role === 'user' && m.content
 	);
 
 	if (firstUserMessage?.content) {
