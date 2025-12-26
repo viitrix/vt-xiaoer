@@ -188,6 +188,8 @@ const en = {
 	setupRole: 'AI Agent Management',
 	agents: 'Agents',
 	emptyAgnets: 'No Agents',
+	noAgentChosen: 'Create new agent or choose one from the list',
+	newAgent: 'New Agent'
 
 } satisfies BaseTranslation;
 

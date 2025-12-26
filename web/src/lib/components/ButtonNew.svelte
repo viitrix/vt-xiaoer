@@ -2,19 +2,26 @@
 	import { onMount } from 'svelte';
 
 	import LL from '$i18n/i18n-svelte';
+	import { Sitemap } from '$lib/sitemap';
 	import { generateRandomId } from '$lib/utils';
+
 	import Button from './Button.svelte';
 
+	interface Props {
+		sitemap: Sitemap;
+	}
+
+	let { sitemap }: Props = $props();
 	let newId = $state('');
 	let href = $state('');
 
-	export function generateNewUrl(id?: string): string {
-		return `/sessions/${id ? id : generateRandomId()}`;
-	}	
+	function generateNewUrl(sitemap: Sitemap, id?: string): string {
+		return `/${sitemap}/${id ? id : generateRandomId()}`;
+	}
 
 	function setId() {
 		newId = generateRandomId();
-		href = generateNewUrl(newId);
+		href = generateNewUrl(sitemap, newId);
 	}
 
 	onMount(setId);
@@ -27,6 +34,6 @@
 		{href}
 		onclick={setId}
 	>
-		{$LL.newSession()}
+		{sitemap === Sitemap.SESSIONS ? $LL.newSession() : $LL.newAgent()}
 	</Button>
 </div>

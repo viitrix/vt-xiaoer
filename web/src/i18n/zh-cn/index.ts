@@ -134,6 +134,9 @@ const zh_cn = {
 	setupRole: '配置角色',
 	agents: '智能体',
 	emptyAgnets: '没有智能体在运行',
+	noAgentChosen: '创建一个新的智能体或者查看历史智能体',
+	newAgent: '创建智能体'
+
 } satisfies BaseTranslation;
 
 export default zh_cn;

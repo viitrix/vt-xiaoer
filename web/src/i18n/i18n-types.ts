@@ -742,6 +742,14 @@ type RootTranslation = {
 	 * N​o​ ​A​g​e​n​t​s
 	 */
 	emptyAgnets: string
+	/**
+	 * C​r​e​a​t​e​ ​n​e​w​ ​a​g​e​n​t​ ​o​r​ ​c​h​o​o​s​e​ ​o​n​e​ ​f​r​o​m​ ​t​h​e​ ​l​i​s​t
+	 */
+	noAgentChosen: string
+	/**
+	 * N​e​w​ ​A​g​e​n​t
+	 */
+	newAgent: string
 }
 
 export type TranslationFunctions = {
@@ -1470,6 +1478,14 @@ The completion in progress will stop
 	 * No Agents
 	 */
 	emptyAgnets: () => LocalizedString
+	/**
+	 * Create new agent or choose one from the list
+	 */
+	noAgentChosen: () => LocalizedString
+	/**
+	 * New Agent
+	 */
+	newAgent: () => LocalizedString
 }
 
 export type Formatters = {}

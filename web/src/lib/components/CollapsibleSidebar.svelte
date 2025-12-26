@@ -102,9 +102,7 @@
 				</button>
 			</div>
 			<div class="border-b bg-shade-2 px-3 pb-3 pt-0">
-				{#if activeSection === 'sessions'}
-					<ButtonNew />
-				{/if}
+				<ButtonNew sitemap={activeSection === 'sessions' ? Sitemap.SESSIONS : Sitemap.AGENTS} />
 			</div>
 
 			<div class="flex flex-1 flex-col overflow-hidden">
@@ -154,7 +152,7 @@
 									<EmptyMessage>{$LL.emptyKnowledge()}</EmptyMessage>
 								{/if}
 								-->
-								<EmptyMessage>{$LL.emptyKnowledge()}</EmptyMessage>
+								<EmptyMessage>{$LL.emptyAgnets()}</EmptyMessage>
 							</SectionList>
 						{/if}
 					</section>
