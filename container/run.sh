@@ -22,9 +22,9 @@ exec ${CONTAINER_RUNTIME} run --rm -it\
     -e HOST_STORE_DIR="$(pwd)/workspace" \
     -e SERVER_PORT="${SERVER_PORT}" \
     -e HOST_EXT_PORT="${HOST_EXT_PORT}" \
+    --group-add video \
+    --device /dev/video0:/dev/video79 \
     --add-host host.docker.internal:host-gateway \
-    -e ENABLE_AUDIO="${ENABLE_AUDIO:-false}" \
-    -e AUDIO_DEVICE="${AUDIO_DEVICE:-default}" \
     -p "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}" \
     -v "$(pwd)/../claw/src:/app/src:ro" \
     -v "$(pwd)/../pi:/home/pn/.pi/agent" \

@@ -42,6 +42,21 @@ def save_wav(pcm_data: list[np.ndarray], filepath: str):
     logger.info(f"Saved: {filepath} ({duration_ms:.0f}ms)")
 
 
+def tts_play(tts_url: str, text: str):
+    data = json.dumps({"text": text}).encode("utf-8")
+    req = urllib.request.Request(
+        tts_url, data=data, headers={"Content-Type": "application/json"}
+    )
+    try:
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            result = json.loads(resp.read().decode("utf-8"))
+            logger.info(f"TTS: {result}")
+    except urllib.error.URLError as e:
+        logger.error(f"TTS request failed: {e}")
+    except Exception as e:
+        logger.error(f"TTS error: {e}")
+
+
 def call_callback(url: str, text: str) -> str:
     data = json.dumps({"text": text}).encode("utf-8")
     req = urllib.request.Request(
@@ -69,11 +84,14 @@ def main():
     parser.add_argument("--output", type=str, default=OUTPUT_DIR, help="Output directory for WAV files")
     parser.add_argument("--save-wav", action="store_true", default=False, help="Save WAV files to output directory")
     parser.add_argument("--callback-url", type=str, default=os.getenv("CALLBACK_URL", "http://localhost:5173/walkie/api/asr"), help="HTTP callback URL after ASR")
+    parser.add_argument("--tts-url", type=str, default=os.getenv("TTS_URL", "http://localhost:4000/tts/play"), help="TTS service URL")
     args = parser.parse_args()
 
     if args.list_devices:
         print(sd.query_devices())
         return
+
+    print(args)
 
     load_dotenv()
     app_id = os.getenv("XF_APP_ID")
@@ -166,6 +184,8 @@ def main():
                             reply = call_callback(args.callback_url, text)
                             if reply:
                                 logger.info(f"[{utterance_count}] Reply: {reply}")
+                                if args.tts_url:
+                                    tts_play(args.tts_url, reply)
 
                         if args.save_wav:
                             filepath = os.path.join(args.output, f"utterance_{utterance_count:04d}.wav")
