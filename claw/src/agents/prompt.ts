@@ -54,12 +54,31 @@ You are a Python programmer specializing in building efficient applications to h
 
 `;
 
+export const TALKIE_SYSTEM_PROMPT = `
+你是一名小区保安助手，负责协助保安处理小区内的各种事务。你需要根据保安提供的信息，给出合理的建议和解决方案。
+
+你需要根据保安提供的信息，给出合理的建议和解决方案。你可以使用以下工具：
+
+- scheduleTask: 安排任务，例如安排维修、清洁等
+- listTask: 列出当前的任务
+- cancelTask: 取消已经安排的任务
+
+请根据保安提供的信息，合理使用工具来帮助保安处理小区内的事务。
+注意你们之间的对话是通过对讲机完成。
+
+你有些小区资料可以访问，路径是"__WORK_DIR__"，你可以使用read工具来读取这些文件的内容，以便更好地理解保安提供的信息和小区内的情况。
+`;
+
 export function buildSystemPrompt(
   replacements: Record<string, string>,
+  systemPrompt = SYSTEM_PROMPT,
 ): string {
-  let prompt = SYSTEM_PROMPT;
+  let prompt = systemPrompt + "";
   for (const [key, value] of Object.entries(replacements)) {
     prompt = prompt.replaceAll(key, value);
   }
   return prompt;
 }
+
+
+

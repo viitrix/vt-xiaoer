@@ -8,7 +8,7 @@ import {
 import { logger } from "../logger.js";
 import { BotDeps, BotRole } from "../types.js";
 import { SESSION_DIR, PI_DIR } from "../config.js";
-import { buildSystemPrompt } from "./prompt.js";
+import { buildSystemPrompt, TALKIE_SYSTEM_PROMPT } from "./prompt.js";
 import {
   createSendMessageTool,
   createSendFileTool,
@@ -107,7 +107,7 @@ export async function createTalkerAgent(
   deps: BotDeps,
 ): Promise<{ session: AgentSession; sessionManager: SessionManager }> {
   const sessionManager = await loadOrCreateSession(sessionId);
-  const prompt = buildSystemPrompt({ __WORK_DIR__: deps.getFolder() });
+  const prompt = buildSystemPrompt({ __WORK_DIR__: deps.getFolder() }, TALKIE_SYSTEM_PROMPT);
 
   const resLoader = new DefaultResourceLoader({
     systemPromptOverride: () => prompt,
@@ -119,7 +119,11 @@ export async function createTalkerAgent(
   logger.info("Creating Talker AgentSession......");
   const { session } = await createAgentSession({
     sessionManager: sessionManager,
-    customTools: [],
+    customTools: [
+      createScheduleTaskTool(deps),
+      createListTaskTool(deps),
+      createCancelTaskTool(deps),
+    ],
     resourceLoader: resLoader,
     agentDir: PI_DIR,
     cwd: deps.getFolder(),

@@ -49,7 +49,7 @@ export const BOT_ROLE_INFO: Record<BotRole, BotRoleInfo> = {
 };
 
 export const CHANNEL_ROLES: Record<BotChannel, BotRole[]> = {
-  web: ["assistant", "talker"],
+  web: ["assistant"],
   weixin: ["app-assistant"],
   talkie: ["talker"],
 };
