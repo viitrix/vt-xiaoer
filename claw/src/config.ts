@@ -25,9 +25,15 @@ export const SCHEDULER_POLL_INTERVAL = 15000;
 export const TIMEZONE =
   process.env.TZ || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-// Web API port
+// HTTP API port
 const rawPort = parseInt(process.env.SERVER_PORT || "", 10);
 export const SERVER_PORT = Number.isNaN(rawPort) ? 3000 : rawPort;
+
+// EXTERN API port (outside container)
+export const HOST_EXT_PORT = process.env.HOST_EXT_PORT || 4000;
+
+// TTS service
+export const TTS_BASE_URL =`http://host.docker.internal:${HOST_EXT_PORT}`;
 
 // Define the roles for channel type
 export const BOT_ROLE_INFO: Record<BotRole, BotRoleInfo> = {

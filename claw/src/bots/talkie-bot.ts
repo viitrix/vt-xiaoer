@@ -13,6 +13,7 @@ import { BotDeps, BotRole, BotChannel } from "../types.js";
 import {
   CHANNEL_ROLES,
   DATA_DIR,
+  TTS_BASE_URL,
   createBotID,
   toUserFolder,
 } from "../config.js";
@@ -93,8 +94,8 @@ export class TalkieBot implements BotDeps {
         await this.session.prompt(formatted, { images: [imgContent] });
       }
     } finally {
+      this.sendMessage(this.msgBuffer);
       this.msgBuffer = "";
-      res.end();
     }
   }
 
@@ -124,7 +125,21 @@ export class TalkieBot implements BotDeps {
     }
   }
 
-  async sendMessage(_text: string): Promise<void> {}
+  async sendMessage(text: string): Promise<void> {
+    if (!text.trim()) return;
+    try {
+      const res = await fetch(`${TTS_BASE_URL}/tts/play`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) {
+        logger.error(`TTS request failed: HTTP ${res.status}`);
+      }
+    } catch (err) {
+      logger.error(`TTS request error: ${err}`);
+    }
+  }
 
   async sendFile(filePath: string): Promise<void> {}
 }
