@@ -6,6 +6,7 @@ import signal
 import argparse
 import asyncio
 import json
+import socket
 import urllib.request
 import urllib.error
 import numpy as np
@@ -63,13 +64,13 @@ def call_callback(url: str, text: str) -> str:
         url, data=data, headers={"Content-Type": "application/json"}
     )
     try:
-        with urllib.request.urlopen(req, timeout=30) as resp:
+        with urllib.request.urlopen(req, timeout=300) as resp:
             result = json.loads(resp.read().decode("utf-8"))
             if result.get("status") == "error":
                 logger.error(f"Callback error: {result.get('error')}")
                 return ""
             return result.get("reply", "")
-    except urllib.error.URLError as e:
+    except (urllib.error.URLError, socket.timeout) as e:
         logger.error(f"Callback request failed: {e}")
         return ""
     except Exception as e:
