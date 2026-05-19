@@ -2,45 +2,34 @@
   import { videoSources } from "$lib/data/mock";
 
   let activeVideo = $state(0);
-  let streams: (MediaStream | null)[] = $state([]);
   let videoRef: HTMLVideoElement | undefined = $state();
+  let mainStream: MediaStream | null = $state(null);
 
-  async function openCamera(index: number) {
+  async function openCamera() {
     try {
+      if (mainStream) {
+        mainStream.getTracks().forEach(t => t.stop());
+      }
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(d => d.kind === "videoinput");
-
-      let constraints: MediaStreamConstraints = { video: true };
-      const src = videoSources[index];
-      if (src.deviceId) {
-        constraints = { video: { deviceId: { exact: src.deviceId } } };
-      } else if (videoDevices.length > index) {
-        constraints = { video: { deviceId: { exact: videoDevices[index].deviceId } } };
-      }
-
+      const constraints: MediaStreamConstraints = videoDevices.length > 0
+        ? { video: { deviceId: { exact: videoDevices[0].deviceId } } }
+        : { video: true };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streams[index] = stream;
-      streams = streams;
-      return stream;
+      mainStream = stream;
+      if (videoRef) videoRef.srcObject = stream;
     } catch (err) {
-      console.error(`摄像头${index + 1}打开失败:`, err);
-      return null;
+      console.error("摄像头打开失败:", err);
     }
   }
 
-  async function switchTo(index: number) {
+  function switchTo(index: number) {
     activeVideo = index;
-    if (!streams[index]) {
-      const stream = await openCamera(index);
-      if (stream && videoRef) {
-        videoRef.srcObject = stream;
-      }
-    } else if (videoRef) {
-      videoRef.srcObject = streams[index];
-    }
+    // 仅摄像头1使用真实WebRTC流，其余路为模拟画面
   }
 
   $effect(() => {
+    openCamera();
     const timer = setInterval(() => {
       const next = (activeVideo + 1) % videoSources.length;
       switchTo(next);
@@ -54,15 +43,22 @@
 
   <!-- 主视频区 -->
   <div class="relative flex-1 m-3 rounded-lg overflow-hidden bg-black/60 flex items-center justify-center">
-    <!-- bind:this doesn't work on media elements in some Svelte versions, use action instead -->
-    <!-- svelte-ignore binding_property_non_reactive -->
-    <video
-      bind:this={videoRef}
-      autoplay
-      playsinline
-      muted
-      class="w-full h-full object-cover"
-    ></video>
+    {#if activeVideo === 0}
+      <video
+        bind:this={videoRef}
+        autoplay
+        playsinline
+        muted
+        class="w-full h-full object-cover"
+      ></video>
+    {:else}
+      <div class="flex flex-col items-center gap-3 text-text-secondary">
+        <svg class="w-16 h-16 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
+        </svg>
+        <span class="text-sm">{videoSources[activeVideo].title}</span>
+      </div>
+    {/if}
     <!-- 视频标签 -->
     <div class="absolute top-2 left-2 px-2 py-1 rounded bg-red-600/80 text-xs text-white flex items-center gap-1">
       <span class="w-2 h-2 rounded-full bg-red-400 animate-breathe"></span>

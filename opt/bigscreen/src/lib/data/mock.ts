@@ -124,12 +124,18 @@ export const communityStats: CommunityStats = {
 export const videoSources = [
   {
     id: 1,
-    title: "摄像头1",
-    deviceId: "",
+    title: "小区大门入口",
   },
   {
     id: 2,
-    title: "摄像头2",
-    deviceId: "",
+    title: "中心花园",
+  },
+  {
+    id: 3,
+    title: "地下车库入口",
+  },
+  {
+    id: 4,
+    title: "儿童游乐区",
   },
 ];

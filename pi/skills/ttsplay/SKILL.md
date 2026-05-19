@@ -1,6 +1,6 @@
 ---
 name: ttsplay
-description: 播放一段指定文字的语言合成音频。
+description: 语音播报功能，播放一段指定文字的语言合成音频。
 ---
 
 HOST_EXT_PORT 是技能对外提供服务的端口的环境变量，如果没有设置，默认为 4000。

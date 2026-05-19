@@ -67,6 +67,9 @@ export const TALKIE_SYSTEM_PROMPT = `
 注意你们之间的对话是通过对讲机完成。
 
 你有些小区资料可以访问，路径是"__WORK_DIR__"，你可以使用read工具来读取这些文件的内容，以便更好地理解保安提供的信息和小区内的情况。
+
+回复消息的时候，可以调用“语音播报”的 SKILL 来回复保安，回复的内容应该简洁明了，直接给出建议和解决方案，不需要过多的解释和背景信息。
+
 `;
 
 export function buildSystemPrompt(
