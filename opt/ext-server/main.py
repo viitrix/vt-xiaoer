@@ -10,7 +10,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from loguru import logger
 
-from config import server_port, tts_config
+from config import server_port, tts_config, yolo_model, yolo_conf
 from tts.aliyun import TTSProvider as AliyunTTS
 
 # --- CLI args parsed before app starts ---
@@ -23,6 +23,7 @@ CAMERA_DEVICE = cli_args.camera
 
 app = FastAPI(title="Claw Extension Server")
 _tts_providers: dict[str, AliyunTTS] = {}
+_yolo_model = None
 
 def _load_tts_config():
     # For simplicity, we only support Aliyun TTS currently.
@@ -32,7 +33,7 @@ def _load_tts_config():
     logger.info("TTS providers loaded: {}", list(_tts_providers.keys()))
     if CAMERA_DEVICE:
         logger.info("Camera device: {}", CAMERA_DEVICE)
-    
+
 @app.on_event("startup")
 async def startup():
     _load_tts_config()
@@ -150,6 +151,46 @@ async def camera_snapshot(
         media_type="image/jpeg",
         filename="snapshot.jpg",
         background=None,
+    )
+
+
+# --- YOLO object detection ---
+
+def _get_yolo_model():
+    global _yolo_model
+    if _yolo_model is None:
+        from ultralytics import YOLO
+        logger.info("Loading YOLO model: {}", yolo_model)
+        _yolo_model = YOLO(yolo_model)
+    return _yolo_model
+
+
+@app.post("/camera/detect")
+async def detect_objects(
+    w: int = Query(1280, description="Width"),
+    h: int = Query(720, description="Height"),
+    conf: float = Query(yolo_conf, description="Confidence threshold"),
+):
+    if not CAMERA_DEVICE:
+        raise HTTPException(400, "No camera device configured. Start with --camera /dev/videoX")
+    if not os.path.exists(CAMERA_DEVICE):
+        raise HTTPException(400, f"Camera device {CAMERA_DEVICE} not found")
+
+    frame_path = _capture_frame(CAMERA_DEVICE, w, h)
+    if not frame_path:
+        raise HTTPException(500, "Capture failed")
+
+    model = _get_yolo_model()
+    results = model(frame_path, conf=conf)
+
+    output_path = frame_path.replace(".jpg", "_detected.jpg")
+    results[0].save(filename=output_path)
+
+    os.unlink(frame_path)
+    return FileResponse(
+        output_path,
+        media_type="image/jpeg",
+        filename="detected.jpg",
     )
 
 

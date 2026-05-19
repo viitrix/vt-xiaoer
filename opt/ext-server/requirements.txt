@@ -4,3 +4,4 @@ httpx>=0.28
 loguru>=0.7
 requests>=2.32
 python-dotenv>=1.0
+ultralytics>=8.0
