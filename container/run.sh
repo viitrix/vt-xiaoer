@@ -29,4 +29,5 @@ exec ${CONTAINER_RUNTIME} run --rm -it\
     -v "$(pwd)/../claw/src:/app/src:ro" \
     -v "$(pwd)/../pi:/home/pn/.pi/agent" \
     -v "$(pwd)/workspace:/workspace" \
+    -v "$(pwd)/../opt/bigscreen:/bigscreen" \
     vt-claw:${TAG}
