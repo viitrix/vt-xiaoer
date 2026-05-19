@@ -1,14 +1,24 @@
+import argparse
 import os
+import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel
 from loguru import logger
 
 from config import server_port, tts_config
 from tts.aliyun import TTSProvider as AliyunTTS
+
+# --- CLI args parsed before app starts ---
+_parser = argparse.ArgumentParser()
+_parser.add_argument("--camera", default=os.getenv("CAMERA_DEVICE", ""),
+                     help="Camera device path, e.g. /dev/video0")
+cli_args, _ = _parser.parse_known_args()
+CAMERA_DEVICE = cli_args.camera
 
 
 app = FastAPI(title="Claw Extension Server")
@@ -20,6 +30,8 @@ def _load_tts_config():
     _tts_providers["default"] = aliyun_tts
     _tts_providers["aliyun"] = aliyun_tts
     logger.info("TTS providers loaded: {}", list(_tts_providers.keys()))
+    if CAMERA_DEVICE:
+        logger.info("Camera device: {}", CAMERA_DEVICE)
     
 @app.on_event("startup")
 async def startup():
@@ -87,6 +99,59 @@ async def cleanup_tts_files():
             f.unlink()
             count += 1
     return {"deleted": count}
+
+
+# --- Camera capture ---
+
+def _capture_frame(device: str, width: int = 1280, height: int = 720) -> str | None:
+    """Capture a single JPG frame via ffmpeg. Returns path to temp file or None."""
+    if not shutil.which("ffmpeg"):
+        logger.error("ffmpeg not found")
+        return None
+
+    tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False)
+    tmp.close()
+
+    for fmt in ("mjpeg", "yuyv422"):
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "v4l2",
+            "-input_format", fmt,
+            "-video_size", f"{width}x{height}",
+            "-i", device,
+            "-frames:v", "1",
+            "-q:v", "2",
+            tmp.name,
+        ]
+        result = subprocess.run(cmd, capture_output=True, text=True)
+        if result.returncode == 0 and os.path.isfile(tmp.name) and os.path.getsize(tmp.name) > 0:
+            return tmp.name
+
+    os.unlink(tmp.name)
+    return None
+
+
+@app.get("/camera/snapshot")
+async def camera_snapshot(
+    w: int = Query(1280, description="Width"),
+    h: int = Query(720, description="Height"),
+):
+    if not CAMERA_DEVICE:
+        raise HTTPException(400, "No camera device configured. Start with --camera /dev/videoX")
+    if not os.path.exists(CAMERA_DEVICE):
+        raise HTTPException(400, f"Camera device {CAMERA_DEVICE} not found")
+
+    path = _capture_frame(CAMERA_DEVICE, w, h)
+    if not path:
+        raise HTTPException(500, "Capture failed")
+
+    return FileResponse(
+        path,
+        media_type="image/jpeg",
+        filename="snapshot.jpg",
+        background=None,
+    )
+
 
 if __name__ == "__main__":
     import uvicorn
