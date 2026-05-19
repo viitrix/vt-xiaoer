@@ -151,38 +151,10 @@ export async function talkieChat(text: string): Promise<string> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ text }),
   });
-
   if (!resp.ok) {
-    const body = await resp.text().catch(() => "");
-    throw new Error(`claw talkie returned ${resp.status}: ${body}`);
+    throw new Error(`claw talkie-chat returned ${resp.status}`);
   }
-  if (!resp.body) return "";
-
-  const reader = resp.body.getReader();
-  const decoder = new TextDecoder();
-  let buffer = "";
-  let result = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-    const lines = buffer.split("\n");
-    buffer = lines.pop()!;
-
-    for (const line of lines) {
-      const trimmed = line.trim();
-      if (!trimmed.startsWith("data: ")) continue;
-      try {
-        const event = JSON.parse(trimmed.slice(6));
-        if (event.type === "text_delta") result += event.delta;
-      } catch {
-        // skip malformed
-      }
-    }
-  }
-
+  const result = await resp.text();
   return result;
 }
 

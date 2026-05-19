@@ -26,7 +26,7 @@ export class TalkieBot implements BotDeps {
   sessionId = "";
   session!: AgentSession;
   private unsubscribe: (() => void) | null = null;
-  private currentRes: express.Response | null = null;
+  private msgBuffer: string = "";
 
   private constructor(userId: string, role: BotRole, sessionId?: string) {
     this.userId = userId;
@@ -76,10 +76,15 @@ export class TalkieBot implements BotDeps {
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      Connection: "keep-alive",
     });
+    if (this.session.isStreaming) {
+      res.write("上一条消息还未结束，请稍等...");
+    } else {
+      res.write("收到！");
+    }
+    res.end();
 
-    this.currentRes = res;
+    this.msgBuffer = "";
     try {
       const formatted = formatMessages(text, "txt");
       if (!imgContent) {
@@ -88,35 +93,18 @@ export class TalkieBot implements BotDeps {
         await this.session.prompt(formatted, { images: [imgContent] });
       }
     } finally {
-      this.currentRes = null;
-      res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+      this.msgBuffer = "";
       res.end();
     }
   }
 
   private handleEvent(event: AgentSessionEvent): void {
-    if (!this.currentRes || this.currentRes.writableEnded) return;
-
     switch (event.type) {
       case "message_update": {
         const assistantEvent = event.assistantMessageEvent;
         if (assistantEvent.type === "text_delta") {
-          this.currentRes.write(
-            `data: ${JSON.stringify({ type: "text_delta", delta: assistantEvent.delta })}\n\n`,
-          );
+          this.msgBuffer += assistantEvent.delta;
         }
-        break;
-      }
-      case "tool_execution_start": {
-        this.currentRes.write(
-          `data: ${JSON.stringify({ type: "tool_start", toolName: event.toolName })}\n\n`,
-        );
-        break;
-      }
-      case "tool_execution_end": {
-        this.currentRes.write(
-          `data: ${JSON.stringify({ type: "tool_end", toolName: event.toolName, isError: event.isError })}\n\n`,
-        );
         break;
       }
     }
