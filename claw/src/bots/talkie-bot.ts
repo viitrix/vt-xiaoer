@@ -96,7 +96,8 @@ export class TalkieBot implements BotDeps {
         await this.session.prompt(formatted, { images: [imgContent] });
       }
     } finally {
-      this.sendMessage(this.msgBuffer);
+      // 可能会触发多次重复回复，暂时删除，后续需要改成角色去配置不同的SKILL
+      //this.sendMessage(this.msgBuffer);
       this.msgBuffer = "";
     }
   }
