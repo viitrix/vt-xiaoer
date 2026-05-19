@@ -120,7 +120,9 @@ export async function createTalkerAgent(
   const { session } = await createAgentSession({
     sessionManager: sessionManager,
     customTools: [
-      //createSendMessageTool(deps),
+      createScheduleTaskTool(deps),
+      createListTaskTool(deps),
+      createCancelTaskTool(deps),
     ],
     resourceLoader: resLoader,
     agentDir: PI_DIR,
