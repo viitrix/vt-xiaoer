@@ -71,19 +71,21 @@ export class TalkieBot implements BotDeps {
 
   async runQuery(
     text: string,
-    res: express.Response,
+    res?: express.Response,
     imgContent?: ImageContent,
   ): Promise<void> {
-    res.writeHead(200, {
-      "Content-Type": "text/event-stream",
-      "Cache-Control": "no-cache",
-    });
-    if (this.session.isStreaming) {
-      res.write("上一条消息还未结束，请稍等...");
-    } else {
-      res.write("收到！");
+    if (res) {
+      res.writeHead(200, {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache",
+      });
+      if (this.session.isStreaming) {
+        res.write("上一条消息还未结束，请稍等...");
+      } else {
+        res.write("收到！");
+      }
+      res.end();
     }
-    res.end();
 
     this.msgBuffer = "";
     try {

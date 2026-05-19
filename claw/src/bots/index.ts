@@ -171,5 +171,7 @@ export async function scheduleBot(
   }
   if (bot instanceof WeixinBot) {
     await bot.runQuery(prompt);
+  } else if (bot instanceof TalkieBot) {
+    await bot.runQuery(prompt);
   }
 }
