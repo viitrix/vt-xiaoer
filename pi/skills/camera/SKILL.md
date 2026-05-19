@@ -7,9 +7,9 @@ description: 抓取监控摄像头图像，用于监控安防场景，监控图�
 
 ```bash
 #获取照片：
-curl http://localhost:4000/camera/snapshot -o snapshot.jpg
+curl http://host.docker.internal:4000/camera/snapshot -o snapshot.jpg
 # 或指定分辨率
-curl "http://localhost:4000/camera/snapshot?w=640&h=480" -o snap.jpg
+curl "http://host.docker.internal:4000/camera/snapshot?w=640&h=480" -o snap.jpg
 ```
 
 
