@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <title>翡翠湾智慧社区 · 管理大屏</title>
+  <title>VT-Claw 智能保安 · 管理大屏</title>
 </svelte:head>
 
 <div class="w-screen h-screen flex flex-col bg-[#020b1a] overflow-hidden">
@@ -25,7 +25,7 @@
   <!-- 欢迎横幅 -->
   <div class="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 border-b border-panel-border px-8 py-3 relative z-10">
     <div class="flex items-center justify-center text-lg font-bold tracking-[4px] text-white">
-      🎉 欢迎中餐 · 欢迎收餐 🎉
+      🎉 ...欢迎业主回家... 🎉
     </div>
   </div>
 
@@ -62,8 +62,8 @@
 
   <!-- 底部信息栏 -->
   <footer class="flex items-center justify-between px-8 py-2 text-[10px] text-text-secondary/40 border-t border-panel-border">
-    <span>翡翠湾智慧社区管理平台 v1.0</span>
+    <span>VT-CLAW 多用户，本地模型，智能助手 v1.0</span>
     <span>数据更新时间: 实时</span>
-    <span>技术支持: 智慧社区解决方案</span>
+    <span>技术支持: 上海云锦微智能技术有限公司</span>
   </footer>
 </div>

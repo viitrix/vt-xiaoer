@@ -10,22 +10,41 @@
       if (mainStream) {
         mainStream.getTracks().forEach(t => t.stop());
       }
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(d => d.kind === "videoinput");
-      const constraints: MediaStreamConstraints = videoDevices.length > 0
-        ? { video: { deviceId: { exact: videoDevices[0].deviceId } } }
-        : { video: true };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      let stream: MediaStream;
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(d => d.kind === "videoinput");
+        if (videoDevices.length > 0 && videoDevices[0].deviceId) {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { deviceId: { exact: videoDevices[0].deviceId } }
+          });
+        } else {
+          stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        }
+      } catch {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      }
       mainStream = stream;
-      if (videoRef) videoRef.srcObject = stream;
+      attachStream(stream);
     } catch (err) {
       console.error("摄像头打开失败:", err);
     }
   }
 
+  function attachStream(stream: MediaStream) {
+    if (!videoRef) return;
+    videoRef.srcObject = stream;
+    videoRef.play().catch(() => {});
+  }
+
+  $effect(() => {
+    if (mainStream && videoRef) {
+      attachStream(mainStream);
+    }
+  });
+
   function switchTo(index: number) {
     activeVideo = index;
-    // 仅摄像头1使用真实WebRTC流，其余路为模拟画面
   }
 
   $effect(() => {
@@ -43,22 +62,13 @@
 
   <!-- 主视频区 -->
   <div class="relative flex-1 m-3 rounded-lg overflow-hidden bg-black/60 flex items-center justify-center">
-    {#if activeVideo === 0}
-      <video
-        bind:this={videoRef}
-        autoplay
-        playsinline
-        muted
-        class="w-full h-full object-cover"
-      ></video>
-    {:else}
-      <div class="flex flex-col items-center gap-3 text-text-secondary">
-        <svg class="w-16 h-16 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-        </svg>
-        <span class="text-sm">{videoSources[activeVideo].title}</span>
-      </div>
-    {/if}
+    <video
+      bind:this={videoRef}
+      autoplay
+      playsinline
+      muted
+      class="w-full h-full object-cover"
+    ></video>
     <!-- 视频标签 -->
     <div class="absolute top-2 left-2 px-2 py-1 rounded bg-red-600/80 text-xs text-white flex items-center gap-1">
       <span class="w-2 h-2 rounded-full bg-red-400 animate-breathe"></span>
