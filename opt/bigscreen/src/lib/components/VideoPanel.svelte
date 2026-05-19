@@ -2,11 +2,48 @@
   import { videoSources } from "$lib/data/mock";
 
   let activeVideo = $state(0);
+  let streams: (MediaStream | null)[] = $state([]);
+  let videoRef: HTMLVideoElement | undefined = $state();
 
-  // 自动轮切摄像头
+  async function openCamera(index: number) {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(d => d.kind === "videoinput");
+
+      let constraints: MediaStreamConstraints = { video: true };
+      const src = videoSources[index];
+      if (src.deviceId) {
+        constraints = { video: { deviceId: { exact: src.deviceId } } };
+      } else if (videoDevices.length > index) {
+        constraints = { video: { deviceId: { exact: videoDevices[index].deviceId } } };
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      streams[index] = stream;
+      streams = streams;
+      return stream;
+    } catch (err) {
+      console.error(`摄像头${index + 1}打开失败:`, err);
+      return null;
+    }
+  }
+
+  async function switchTo(index: number) {
+    activeVideo = index;
+    if (!streams[index]) {
+      const stream = await openCamera(index);
+      if (stream && videoRef) {
+        videoRef.srcObject = stream;
+      }
+    } else if (videoRef) {
+      videoRef.srcObject = streams[index];
+    }
+  }
+
   $effect(() => {
     const timer = setInterval(() => {
-      activeVideo = (activeVideo + 1) % videoSources.length;
+      const next = (activeVideo + 1) % videoSources.length;
+      switchTo(next);
     }, 10000);
     return () => clearInterval(timer);
   });
@@ -17,13 +54,15 @@
 
   <!-- 主视频区 -->
   <div class="relative flex-1 m-3 rounded-lg overflow-hidden bg-black/60 flex items-center justify-center">
-    <!-- 占位符: 实际项目替换为 <video> 或 iframe -->
-    <div class="flex flex-col items-center gap-3 text-text-secondary">
-      <svg class="w-16 h-16 opacity-40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z" />
-      </svg>
-      <span class="text-sm">{videoSources[activeVideo].title}</span>
-    </div>
+    <!-- bind:this doesn't work on media elements in some Svelte versions, use action instead -->
+    <!-- svelte-ignore binding_property_non_reactive -->
+    <video
+      bind:this={videoRef}
+      autoplay
+      playsinline
+      muted
+      class="w-full h-full object-cover"
+    ></video>
     <!-- 视频标签 -->
     <div class="absolute top-2 left-2 px-2 py-1 rounded bg-red-600/80 text-xs text-white flex items-center gap-1">
       <span class="w-2 h-2 rounded-full bg-red-400 animate-breathe"></span>
@@ -39,7 +78,7 @@
     {#each videoSources as video, i}
       <button
         class="flex-1 h-14 rounded-md overflow-hidden border-2 transition-all {i === activeVideo ? 'border-accent' : 'border-transparent opacity-60 hover:opacity-80'}"
-        onclick={() => activeVideo = i}
+        onclick={() => switchTo(i)}
       >
         <div class="w-full h-full bg-black/60 flex items-center justify-center text-xs text-text-secondary">
           {video.title}

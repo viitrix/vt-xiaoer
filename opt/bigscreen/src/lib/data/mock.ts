@@ -131,23 +131,12 @@ export const communityStats: CommunityStats = {
 export const videoSources = [
   {
     id: 1,
-    title: "小区大门入口",
-    src: ""
-    // 使用占位符，实际部署时替换为视频流地址
+    title: "摄像头1",
+    deviceId: "",
   },
   {
     id: 2,
-    title: "中心花园",
-    src: ""
+    title: "摄像头2",
+    deviceId: "",
   },
-  {
-    id: 3,
-    title: "地下车库入口",
-    src: ""
-  },
-  {
-    id: 4,
-    title: "儿童游乐区",
-    src: ""
-  }
 ];
