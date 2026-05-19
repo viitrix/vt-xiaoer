@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import { videoSources } from "$lib/data/mock";
 
   let activeVideo = $state(0);
@@ -47,7 +48,7 @@
     activeVideo = index;
   }
 
-  $effect(() => {
+  onMount(() => {
     openCamera();
     const timer = setInterval(() => {
       const next = (activeVideo + 1) % videoSources.length;
