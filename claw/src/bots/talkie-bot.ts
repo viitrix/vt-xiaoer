@@ -126,6 +126,7 @@ export class TalkieBot implements BotDeps {
   }
 
   async sendMessage(text: string): Promise<void> {
+    logger.info(`TalkieBot ${this.userId} sending message: ${text}`);
     if (!text.trim()) return;
     try {
       const res = await fetch(`${TTS_BASE_URL}/tts/play`, {
