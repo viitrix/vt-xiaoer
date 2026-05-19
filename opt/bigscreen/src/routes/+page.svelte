@@ -22,6 +22,13 @@
     <div class="absolute -bottom-1/2 -right-1/4 w-[500px] h-[500px] rounded-full bg-accent/5 blur-[100px]"></div>
   </div>
 
+  <!-- 欢迎横幅 -->
+  <div class="bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 border-b border-panel-border px-8 py-3 relative z-10">
+    <div class="flex items-center justify-center text-lg font-bold tracking-[4px] text-white">
+      🎉 欢迎中餐 · 欢迎收餐 🎉
+    </div>
+  </div>
+
   <!-- 主体内容: 三栏布局 -->
   <div class="flex-1 grid grid-cols-[280px_1fr_280px] gap-3 p-3 relative z-10 min-h-0">
     <!-- 左栏 -->

@@ -33,7 +33,7 @@
   <!-- 中间: 标题 -->
   <div class="absolute left-1/2 -translate-x-1/2 flex flex-col items-center">
     <h1 class="text-2xl font-bold tracking-[8px] text-white drop-shadow-[0_0_20px_rgba(0,212,255,0.5)]">
-      {communityName} · 智慧管理大屏
+      欢迎业主会欢迎业主
     </h1>
   </div>
 
