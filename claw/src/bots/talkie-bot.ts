@@ -81,6 +81,8 @@ export class TalkieBot implements BotDeps {
       });
       if (this.session.isStreaming) {
         res.write("上一条消息还未结束，请稍等...");
+        res.end();
+        return;
       } else {
         res.write("收到！");
       }
