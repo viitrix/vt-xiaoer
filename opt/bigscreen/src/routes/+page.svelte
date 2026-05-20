@@ -45,7 +45,6 @@
     <div class="min-h-0">
       <VideoPanel />
     </div>
-
     <!-- 右栏 -->
     <div class="flex flex-col gap-3 min-h-0">
       <div class="flex-1 min-h-0">

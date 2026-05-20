@@ -168,8 +168,9 @@ def _get_yolo_model():
     return _yolo_model
 
 
-@app.post("/camera/detect")
+@app.get("/camera/detect")
 async def detect_objects(
+
     w: int = Query(1280, description="Width"),
     h: int = Query(720, description="Height"),
     conf: float = Query(yolo_conf, description="Confidence threshold"),
