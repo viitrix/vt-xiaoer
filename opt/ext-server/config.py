@@ -19,7 +19,7 @@ tts_config = {
 
 server_port = int(os.getenv("SERVER_PORT", "4000"))
 
-yolo_model = os.getenv("YOLO_MODEL", "yolov8s.pt")
+yolo_model = os.getenv("YOLO_MODEL", "yolov8l.pt")
 yolo_conf = float(os.getenv("YOLO_CONF", "0.25"))
 
 ## create output dir if not exists

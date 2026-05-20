@@ -160,8 +160,11 @@ def _get_yolo_model():
     global _yolo_model
     if _yolo_model is None:
         from ultralytics import YOLO
-        logger.info("Loading YOLO model: {}", yolo_model)
-        _yolo_model = YOLO(yolo_model)
+        model_path = Path(yolo_model).resolve()
+        if not model_path.exists():
+            raise FileNotFoundError(f"YOLO model not found: {model_path}")
+        logger.info("Loading YOLO model from local file: {}", model_path)
+        _yolo_model = YOLO(str(model_path))
     return _yolo_model
 
 
